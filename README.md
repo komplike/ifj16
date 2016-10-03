@@ -2,4 +2,4 @@
 IFJ Project 2016
 
 ___________________
-zmaz toto
+
