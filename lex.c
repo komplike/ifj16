@@ -53,6 +53,12 @@ void getToken(FILE *f, int *type, char **content){
                                     }                                        
                                 }                                
                             }
+                            
+                            if(c == EOF){
+                                *type = LEX_EOF;
+                                return;
+                            }
+                            
                             break;  // na zacatek celeho while
                         }
                         else{
@@ -150,6 +156,12 @@ void getToken(FILE *f, int *type, char **content){
                             // konec
                             if(c == '"')
                                 break;
+                            
+                            // EOF - zatim neni uzavreno
+                            if(c == EOF){
+                                *type = LEX_ERR;
+                                return;
+                            }
             
                             // pridani znaku
                             addChar(content,type,&alloc_size,&content_size,c);
