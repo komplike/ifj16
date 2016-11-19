@@ -67,22 +67,17 @@ int Class(){
 																}
 																else
 																	return 2;
-
 															else
 																return 2;
-
 														}	
 														else
 															return 2;
-
 													}
 													else
 														return 2;
-
 												}
 												else 
 													return 2;
-
 											}
 											else 
 												return 2;
@@ -92,27 +87,21 @@ int Class(){
 									}
 									else
 										return 2;
-
 								}
 								else
 									return 2;
-
 							}
 							else 
 								return 3;
-
 						}
 						else
 							return 3;
-
 					}
 					else
 						return 2;
-					
 				}
 				else
 					return 2;
-
 			}
 			else
 				return 2;
@@ -155,7 +144,6 @@ int Class(){
 			}
 			else
 				return 2;
-
 		}
 		else
 			return 2;
@@ -194,14 +182,57 @@ int static_id(){
 }
 
 int static_id_expr(){
-
+	if( *type == SIGN_ASSIGN){
+		//value
+	}
 }
 
 int static_func(){
+	if( *type == K_STATIC){
+		GetNextToken(FILE *f, int *type, char **content);
+		if( *type == L_SIMPLE){
+			GetNextToken(FILE *f, int *type, char **content);
+			if( *type == B_ROUND_LEFT){
+				GetNextToken(FILE *f, int *type, char **content);
+				if( (rule = list_params()) == 0){
+					GetNextToken(FILE *f, int *type, char **content);
+					if ( *type == B_ROUND_RIGHT){
+						GetNextToken(FILE *f, int *type, char **content);
+						if( *type == B_WATE_LEFT){
+							GetNextToken(FILE *f, int *type, char **content);
+							if( (rule = body()) == 0){
+								GetNextToken(FILE *f, int *type, char **content);
+								if( *type == B_WAWE_RIGHT){
+									return 0;
+								}
+								else
+									return 2;
+							}
+							else
+								return 2;
+						}
+						else
+							return 2;
+					}
+					else
+						return 2;
+				}
+				else
+					return 2;
+			}
+			else
+				return 2;
+		}
+		else
+			return 2;
+	}
+	else
+		return 2;
 
 }
 
 int list_params(){
+
 
 }
 
@@ -210,10 +241,144 @@ int list_params_next(){
 }
 
 int body(){
+	if( (rule = stat()) == 0){
+		GetNextToken(FILE *f, int *type, char **content);
+		if( *type == O_SEMI){
+			GetNextToken(FILE *f, int *type, char **content);
+			if( (rule = body()) == 0){
+				return 0;
+			}
+			else
+				return 2;
+		}
+		else
+			return 2;
+	}
+	else
+		return 2;
 
 }
 
 int stat(){
+	if( *type == K_IF){
+		GetNextToken(FILE *f, int *type, char **content);
+		if( *type == B_ROUND_LEFT){
+			GetNextToken(FILE *f, int *type, char **content);
+			if( (rule = expr()) == 0){
+				GetNextToken(FILE *f, int *type, char **content);
+				if( *type == B_ROUND_RIGHT){
+					GetNextToken(FILE *f, int *type, char **content);
+					if (*type == B_WATE_LEFT){
+						GetNextToken(FILE *f, int *type, char **content);
+						if( (rule = stat())== 0){
+							GetNextToken(FILE *f, int *type, char **content);
+							if( (rule = body()) == 0){
+								GetNextToken(FILE *f, int *type, char **content);
+								if( *type == B_WAWE_RIGHT){
+									GetNextToken(FILE *f, int *type, char **content);
+									if( *type == K_ELSE){
+										GetNextToken(FILE *f, int *type, char **content);
+										if( *type == B_WATE_LEFT){
+											GetNextToken(FILE *f, int *type, char **content);
+											if( (rule = body()) == 0){
+												GetNextToken(FILE *f, int *type, char **content);
+												if( *type == B_WAWE_RIGHT){
+													return 0;
+												}
+												else return 2;
+											}
+											else
+												return 2;
+										}
+										else
+											return 2;
+									}
+									else
+										return 2;
+								}
+								else
+									return 2;
+							}
+							else
+								return 2;
+						}
+						else
+							return 2;
+					}
+					else
+						return 2;
+				}
+				else
+					return 2;
+			}
+			else
+				return 2;
+		}
+		else
+			return 2;
+
+	}
+	else if( *type == K_WHILE){
+		GetNextToken(FILE *f, int *type, char **content);
+		if( *type == B_ROUND_LEFT){
+			GetNextToken(FILE *f, int *type, char **content);
+			if( (rule = expr()) == 0){
+				GetNextToken(FILE *f, int *type, char **content);
+				if( *type == B_ROUND_RIGHT){
+					GetNextToken(FILE *f, int *type, char **content);
+					if (*type == B_WATE_LEFT){
+						GetNextToken(FILE *f, int *type, char **content);
+						if( (rule = stat())== 0){
+							GetNextToken(FILE *f, int *type, char **content);
+							if( (rule = body()) == 0){
+								GetNextToken(FILE *f, int *type, char **content);
+								if( *type == B_WAWE_RIGHT){
+									return 0;
+								}
+								else
+									return 2;
+							}
+							else
+								return 2;
+						}
+						else
+							return 2;
+					}
+					else
+						return 2;
+				}
+				else
+					return 2;
+			}
+			else
+				return 2;
+		}
+		else
+			return 2;
+
+	}
+	else if( *type = K_RETURN){
+		GetNextToken(FILE *f, int *type, char **content);
+		if( (rule = expr()) == 0){
+			GetNextToken(FILE *f, int *type, char **content);
+			if( *type == O_SEMI){
+				return 0;
+			}
+			else 
+				return 2;
+		}
+		else
+			return 2;
+
+	}
+	else if(){
+
+	}
+	else if(){
+
+	}
+	else
+		return 2;
 
 }
 
