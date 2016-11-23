@@ -18,17 +18,20 @@
 <LIST_PARAMS_NEXT>	, id <LIST_PARAMS_NEXT>
 <BODY>				eps
 <BODY>				<STAT>; <BODY>
-<STAT>				id <EXPR>;
-<STAT>				if (<EXPR>) {<STAT> <BODY>} else {<BODY>}
+<STAT>				id <PRIRAZENI>
+<PRIRAZENI>			EPS
+<PRIRAZENI>			= <EXPR>
+<PRIRAZENI>			= <CALL_FUNC>
+<STAT>				if (<EXPR>) {<STAT>; <BODY>} else {<BODY>}
 <STAT>				while (<EXPR>) {<STAT>; <BODY>}
-<STAT>				return <EXPR>;
+<STAT>				return <EXPR>
 <STAT>				<CALL_FUNC>
-<CALL_FUNC>			<VEST_FUNC>;
-<CALL_FUNC>			<REKURZE_FUNC>;
-<VEST_FUNC>			<VEST_FUNC_ID>
-<VEST_FUNC>			<VEST_FUNC_NOID>
-<VEST_FUNC_ID>		id = <VEST_FUNC_CALL>
-<VEST_FUNC_NOID>	<VEST_FUNC_CALL>
-<VEST_FUNC_CALL>	...
-<EXPR>				eps
+<CALL_FUNC>			id( <ARGS> )
+<ARGS>				<LIT> <ARGS_NEXT>
+<ARGS>				eps
+<LIT>				string
+<LIT>				id
+<LIT>	 			number
+<ARGS_NEXT>			, <LIT> <ARGS_NEXT>
+<ARGS_NEXT>			eps
 <EXPR>				expresion
