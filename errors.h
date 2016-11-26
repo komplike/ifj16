@@ -1,0 +1,24 @@
+#ifndef ERROR_H
+#define ERROR_H
+
+enum ErrCodes
+{
+	ERR_OK = 0,
+	ERR_LEX = 1,
+	ERR_SYNTAX = 2,
+	ERR_SEMANTIC_DEF = 3,
+	ERR_SEMANTIC_TYPES = 4,
+	ERR_AUTO_TYPE = 5,
+	ERR_SEMANTIC_OTHERS = 6,
+	ERR_READ_NUMBER = 7,
+	ERR_UNINIT = 8,
+	ERR_ZERO_DIV = 9,
+	ERR_RUNTIME = 10,
+	ERR_INTERNAL = 99,
+
+	ERR_ALLOC
+};
+
+void ErrExit(int err);
+
+#endif
