@@ -5,7 +5,7 @@
 
 tSymbolTable *table;
 
-tError parser(tSymbolTable *tableS){
+tError parser(){
 	GetNextToken(FILE *f, int *type, char **content);
 
 	if(*type == LEX_EOF)
@@ -582,7 +582,57 @@ tError prirazeni(){
 ** <CALL_FUNC> -> 	id (<ARGS>)
 */
 tError call_func(){
+	if(error != E_OK)
+		return error;
 
+	int clas_name = *type; //uložení id pro případ kdyby se jednalo o třídu nebo vestavěnou funkci
+	if(strcmp(*content, "ifj16")){ //jedná se o vestavěnou funkci
+		GetNextToken(FILE *f, int *type, char **content);
+		if(*type == O_DOT) { //očekává se '.'
+			GetNextToken(FILE *f, int *type, char **content);
+			if(*type == L_SIMPLE)
+				//uložení id do tabulky symbolů
+			else
+				return E_SYN;
+		}
+		else
+			return E_SYN;
+	}
+	else if(*type == L_SIMPLE){
+		//kouknout se do tabulky jestli se nejedná o třídu
+		GetNextToken(FILE *f, int *type, char **content);
+		if(*type == O_DOT) { //očekává se '.'
+			GetNextToken(FILE *f, int *type, char **content);
+			if(*type == L_SIMPLE)
+				//uložení id do TS
+			else
+				return E_SYN;
+		}
+		else if(*type == B_ROUND_LEFT) //jedná se o rekurzivní funkci
+			//uložení funkce do TS;
+		else
+			return E_SYN;
+	}
+
+	GetNextToken(FILE *f, int *type, char **content);
+
+	if(*type != B_ROUND_LEFT)
+		return E_SYN;
+
+	GetNextToken(FILE *f, int *type, char **content);
+
+	if(error = args() != E_OK)
+		return error;
+
+	GetNextToken(FILE *f, int *type, char **content);
+
+	if(*type != B_ROUND_RIGHT)
+		return E_SYN;
+
+	if(error != E_OK)
+		return error;
+
+	return error;	
 }
 
 /*
@@ -590,7 +640,23 @@ tError call_func(){
 ** <ARGS> ->	eps
 */
 tError args(){
+	if(error != E_OK)
+		return error;
 
+	if(*type == B_ROUND_RIGHT) //pokud se token rovná ')' není žádný parametr
+		return error;
+
+	GetNextToken(FILE *f, int *type, char **content);
+
+	if(error = lit() != E_OK)
+		return error;
+
+	GetNextToken(FILE *f, int *type, char **content);
+
+	if(error = args_next() != E_OK)
+		return error;
+
+	return error;
 }
 
 /*
@@ -599,7 +665,10 @@ tError args(){
 ** <LIT> ->		number
 */
 tError lit(){
+	if(error != E_OK)
+		return error;
 
+	//..
 }
 
 /*
@@ -607,5 +676,24 @@ tError lit(){
 ** <ARGS_NEXT> -> , <LIT> <ARGS_NEXT>
 */
 tError args_next(){
+	if(error != E_OK)
+		return error;
 
+	if(*type == B_ROUND_RIGHT) //pokud se token rovná ')' není žádný parametr
+		return error;
+
+	if(*content != ',')
+		return E_SYN;
+
+	GetNextToken(FILE *f, int *type, char **content);
+
+	if(error = lit() != E_OK)
+		return error;
+
+	GetNextToken(FILE *f, int *type, char **content);
+
+	if(error = args_next() != E_OK)
+		return error;
+
+	return error;
 }
