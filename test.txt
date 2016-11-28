@@ -1,3 +1,8 @@
-Test file;
-boolean
-bb
+class Main {
+	static int i;
+	static void run() {
+		int a;
+		a = 5;
+	}
+}
+

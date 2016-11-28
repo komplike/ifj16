@@ -2,6 +2,9 @@
  * funkcie na pracu s tabulkou symbolov
  * autor: Michal Slavka
  * ***************************************************************************/
+#ifndef HTAB_H
+#define HTAB_H
+
 #define FUNC		-1		//docasne
 #define NOT_IN_TABLE -1		//docasne
 #define ESEM		8		//docasne
@@ -9,26 +12,6 @@
 #define NDEF 		0		//docasne
 #define LTAB_SIZE	64
 #define GTAB_SIZE	4
-#define K_BOOLEAN   1001    
-#define K_BREAK     1002
-#define K_CLASS     1003
-#define K_CONTINUE  1004
-#define K_DO        1005
-#define K_DOUBLE    1006
-#define K_ELSE      1007
-#define K_FALSE     1008
-#define K_FOR       1009
-#define K_IF        1010
-#define K_INT       1011
-#define K_RETURN    1012
-#define K_STRING    1013
-#define K_STATIC    1014
-#define K_TRUE      1015
-#define K_VOID      1016
-#define K_WHILE     1017
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 
 typedef struct htab {	//tabulka symbolov
 	int size;
@@ -119,3 +102,5 @@ char *str_cpy(const char *str);
 int str_int(const char *i);
 //konverzia string to double
 double str_double(const char *d);
+
+#endif

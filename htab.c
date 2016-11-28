@@ -3,9 +3,11 @@
  * dole je zakomentovany main
  * autor: Michal Slavka
  * ***************************************************************************/
-
 #include "htab.h"
-
+#include "lex.h"
+#include <stdio.h>
+#include <stdlib.h>
+//#include <string.h>
 /* ****************************************************************************
  * hachovacia funkcia
  * ***************************************************************************/
