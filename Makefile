@@ -1,7 +1,5 @@
-#wordcount.c
-#IJC-DU2, priklad b), 26.4.2016
-#Autor:   Michal Slavka, FIT
-#Prelozeno: gcc 5.2.1
+#Autor:   Michal Slavka
+#len pre rozbehanie parsera a pridanie tabulky sybolov
 
 CFLAGS = -std=c99 
 #-pedantic -Wall -Wextra -g -fPIC
