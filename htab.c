@@ -52,7 +52,7 @@ struct htab_listitem *htab_lookup(htab_t *t, const char *class, const char *name
 	struct htab_listitem *ptr = t->list[hash_i];
 
 	while (ptr != NULL) {
-		if (strcmp(name, ptr->name) == 0)
+	if (strcmp(name, ptr->name) == 0) {
 			if  (class != NULL) {
 				if (strcmp(class, ptr->class) == 0)	
 					return ptr;
@@ -60,6 +60,7 @@ struct htab_listitem *htab_lookup(htab_t *t, const char *class, const char *name
 			else 
 				return ptr;
 		ptr = ptr->next;
+		}
 	}
 
 	return NULL;
@@ -79,30 +80,30 @@ int htab_add(htab_t *htab, const char *class, const char *name, int def, int typ
 	if (name == NULL)
 	{	//pojde prec po odladeni
 		printf("%s\n", "chyba meno");
-		return -1;
+		return 99;
 	}
 
 	if (def == DEF && value == NULL)
 	{	//pojde prec po odladeni
 		if (type != FUNC) {
 		printf("%s\n", "je def ale chyvba value");
-		return -1;
+		return 99;
 		}
 	}
 
 	if (type == FUNC && class == NULL) {
 		printf("%s\n", "funkicii chyba trieda");
-		return -1;
+		return 99;
 
 	}
 
 	struct htab_listitem *new_item = (struct htab_listitem *)malloc(sizeof(htab_listitem_t));
 	if (new_item == NULL) {
 		printf("%s\n", "zlyhala alokacia noveho prvku");
-		return -1;
+		return 99;
 	}
 	//inicializacia noveho prvku
-	new_item->class = str_cpy(class);
+	new_item->class = str_cpy(class);;
 	new_item->name = str_cpy(name);
 	new_item->def = def;
 	new_item->type = type;
@@ -117,11 +118,14 @@ int htab_add(htab_t *htab, const char *class, const char *name, int def, int typ
 		else if (type == K_STRING)
 			new_item->val.val_string = str_cpy(value);
 	}
+	else if (type == K_STRING)
+		new_item->val.val_string = NULL;
 
 	//pridanie prvku do tabulky
 	unsigned int i = hash_function(name, 4);
 	new_item->next = htab->list[i];
 	htab->list[i] = new_item;
+	
 	return 0;
 }
 
@@ -143,18 +147,21 @@ void htab_free(struct htab *t, int size)
 			ptr1 = ptr1->next;
 			free(ptr2->class);
 			free(ptr2->name);
+			if (ptr2->type == K_STRING && ptr2->val.val_string != NULL) {
+				free(ptr2->val.val_string);
+			}
 			if (ptr2->type == FUNC  && ptr2->func != NULL) {
 				free(ptr2->func->args);
 				//TODO	free(ptr->inst_ptr);
 				htab_free(ptr2->func->local_t, size);
 				free(ptr2->func);
 			}
-			if (ptr2->type == K_STRING)
-				free(ptr2->val.val_string);
+
 			free(ptr2);
 		}
 	}
 	free(t);	
+
 }
 
 /* ****************************************************************************
@@ -163,12 +170,11 @@ void htab_free(struct htab *t, int size)
    globalna TS, trieda funkcie, meno funkcie, navratovy typ, zoznam argumentov
  * vracia 0 pri uspechu
  * ***************************************************************************/ 
-int htab_add_func(htab_t *t, const char *class, const char *name, int return_type, arg_l *args)
-{
-	struct function *fun;
+int htab_add_func(htab_t *t, const char *class, const char *name, int return_type, arg_l *args){
+	//struct function *fun;
 	struct htab_listitem *item = htab_lookup(t, class, name);
-	int i;			//pomocne pocitadlo
-	int argc = 0;	//pocet argumentov funkcie
+	//int i;			//pomocne pocitadlo
+	//int argc = 0;	//pocet argumentov funkcie
 
 	if (item == NULL) {
 		printf("funkcia: %s.%s() sa nenasla\n", class, name);
@@ -178,7 +184,7 @@ int htab_add_func(htab_t *t, const char *class, const char *name, int return_typ
 	if (item->func == NULL) {
 		struct function *f = (function_t *)malloc(sizeof(function_t));
 		if (f == NULL) {
-			printf("%s\n", "zlyhala alokacia func_add");
+			printf("%s\n", "htab_add_func: zlyhala alokacia");
 			return 99;
 		}
 		//dodatocne informacie do ts
@@ -194,8 +200,8 @@ int htab_add_func(htab_t *t, const char *class, const char *name, int return_typ
 		//uvedenie zoznamu parametrov do inicializovaneho stavu
 		args->cnt = 0;						
 		args->act = args->first;
-
 	}
+
 	return 0;
 }
 
@@ -203,7 +209,7 @@ int htab_add_func(htab_t *t, const char *class, const char *name, int return_typ
 /* ****************************************************************************
  * inicializacia zoznamu argumentov
  * ***************************************************************************/ 
-arg_l *arg_init() {
+arg_l *arg_init(){
 	struct arg_list *a = (struct arg_list *)malloc(sizeof(struct arg_list));
 	if (a == NULL){
 		//error(99)
@@ -234,61 +240,62 @@ arg_l *arg_init() {
 
 /* ****************************************************************************
  * pridavanie argumentov do lokalnej tabulky symbolov
+ * musi ist ako posledna funkcia ktora pracuje s argumentmi
  * ***************************************************************************/ 
-int arg_add(htab_t *t, arg_l *a)
-{
+int arg_add(htab_t *t, arg_l *a){
 	int i, ret;
 	a->act = a->first;
+
 	for (i = 0; i < a->cnt; i++) {
 		if ((ret = htab_add(t, a->act->class, a->act->name, NDEF, a->act->type, NULL)) != 0)
 			return ret;
-		free(a->act->class);
-		free(a->act->name);
+		if (a->act->class != NULL)
+			free(a->act->class);
+		if (a->act->name != NULL){
+			free(a->act->name);
+		}
 		a->act->class = NULL;
 		a->act->name = NULL;
 		a->act = a->act->next;
 	}
 	return 0;
 }
+
 /* ****************************************************************************
  * indexovat sa zacina od 1
  * ak sa nebudu davat parametre po rade nebude to fungovat
  * parametre:
    inicializovany zoznam, trieda, meno argumentu, typ
  * ***************************************************************************/
-int arg_ctor(arg_l *a, const char *class, const char *name, int type)
-{
-	struct arg *ptr;
 
-	free(a->act->class);
-	free(a->act->name);
+int arg_ctor(arg_l *a, const char *class, const char *name, int type){	
+	if (a == NULL){
+		return 99;
+	}
 	a->act->class = str_cpy(class);
 	a->act->name  = str_cpy(name);
 	a->act->type  = type;
 	a->cnt++;
-
-	if (a->act->next == NULL)
-		ptr = (struct arg *)malloc(sizeof(arg_t));
-	if (ptr == NULL) {
+	if (a->act->next == NULL) {
+		a->act->next = (struct arg *)malloc(sizeof(struct arg));
+	}
+	if (a->act->next == NULL) {
 		return 99;
 	}
 	else {
-		ptr->class = NULL;
-		ptr->name = NULL;
-		ptr->next = NULL;
+		a->act = a->act->next;
+		a->act->class = NULL;
+		a->act->name = NULL;
+		a->act->next = NULL;
 		a->last = a->act;
 	}
-	a->act->next = ptr;
-	a->act = ptr;	
-
-	//printf("- - prideavam arg: %d %s\n", a->cnt, name);
+	return 0;
 }
 
 /* ****************************************************************************
  * pridava argumenty definicie a volania funkcie do ts 
  * ***************************************************************************/
-int *args_arr(arg_l *a, int argc)
-{
+int *args_arr(arg_l *a, int argc){
 	int *type_arr = (int *)malloc(sizeof(int)*argc);
 	if (type_arr == NULL)
 		return NULL;
@@ -309,8 +316,8 @@ void args_free(arg_l *a)
 {
 	a->act = a->first;
 	while (a->last != NULL) {
-		free(a->act->name);
-		free(a->act->class);
+		//free(a->act->name);
+		//free(a->act->class);
 		if (a->act != a->last) {
 			a->act = a->act->next;
 			free(a->first);
@@ -332,10 +339,14 @@ char *str_cpy(const char *str)
 {
 	if (str == NULL)
 		return NULL;
-	char *new_str = (char*)malloc(strlen(str));
+	char *new_str = (char*)malloc(strlen(str)+1);
 	if (new_str == NULL)
 		return NULL;
-
+	/*unsigned int i;
+	for (i = 0; i < strlen(str); ++i)
+	{
+		new_str[i] = str[i];
+	}*/
 	strcpy(new_str,str);
 	return new_str;
 }
@@ -346,6 +357,7 @@ char *str_cpy(const char *str)
  * ***************************************************************************/
 int str_int(const char* i)
 {
+
 	return atoi(i);
 }
 
@@ -355,6 +367,8 @@ int str_int(const char* i)
  * ***************************************************************************/
 double str_double(const char *d)
 {
+	if (d[0] > '0'+8)
+	printf("%s\n", d);
 	return 1.0;
 }
 
@@ -366,7 +380,7 @@ double str_double(const char *d)
 int for_each(htab_t *t, int size, foreach_func func)
 {
 	int i;
-	struct htab_listitem *ptr = NULL;
+	struct htab_listitem *ptr;
 
 	for (i = 0; i < size; i++) {
 		ptr = t->list[i];
@@ -383,8 +397,22 @@ int for_each(htab_t *t, int size, foreach_func func)
  * vytlaci prvok
  * ***************************************************************************/
 void print(struct htab_listitem *l) 
-{
-	printf("name: %s.%s\n", l->class, l->name);
+{	
+	if (l == NULL) {
+		printf("print: bol predany NULL ptr\n");
+		return;
+	}
+
+	
+	if (l->class != NULL|| l->name != NULL) {
+		printf("name: %s.%s\n", l->class, l->name);
+	}
+	else if (l->name == NULL) {
+		printf("Vo funkci print: chyba meno\n");
+	}
+	else {
+		printf("name: (NULL).%s\n", l->name);
+	}
 	printf("init: %d\ntype: %d\n", l->def, l->type);
 	if (l->def == DEF)
 		switch (l->type) {
@@ -420,17 +448,17 @@ void print2(struct htab_listitem *l)
 			case K_DOUBLE: 	printf("		double: NULL\n"); break;
 			case K_STRING:	printf("		string: NULL\n"); break;
 		}
-		printf("- - - - - - - - - - - - - - -\n");
+		printf("\n");
 }
 
 void print_func(struct htab_listitem *l)
 {
 	if (l->type == FUNC) {
 		printf("	name: %s.%s\n", l->class, l->name);
-		if (l->def == DEF) {
+		if (l->def == DEF && l->func != NULL) {
 			printf("	return_type: %d\n", l->func->return_type);
 			printf("	argc: %d\n", l->func->argc);
-			printf("	lokalna ts:\n");
+			printf("	lokalna ts:\n\n");
 			for_each(l->func->local_t, LTAB_SIZE, print2);
 		}
 		//print args
@@ -442,23 +470,25 @@ int main() {
 	struct arg_list *a = arg_init();
 	char *i = "3";
 	char *d = "4.5";
-
 	htab_add(t, "Main",	"str", 	NDEF, K_STRING, NULL);
 	htab_add(t, "b",	"dbl",	DEF, K_DOUBLE, d);
 	htab_add(t, "b", 	"str",	DEF, K_STRING, "Hello World!");
 	htab_add(t, "c", 	"int", 	DEF, K_INT, i);
-	htab_add(t, "a", 	"f",	NDEF,K_INT, NULL);
-	htab_add(t, NULL, 	"g",	DEF, K_INT, "7");
+	htab_add(t, "A", 	"F",	NDEF,K_INT, NULL);
+	htab_add(t, "hmm", 	"g",	DEF, K_INT, "7");
 	htab_add(t, "c", 	"func",	DEF, FUNC, NULL);
 	htab_add(t, "c", 	"fnc", 	DEF, FUNC, NULL);
-	
+
 	arg_ctor(a,"Main","str",K_STRING);
 	htab_add_func(t, "c", "func", K_INT, a);
 
 	arg_ctor(a,"hulahop","xD",K_INT);
-	arg_ctor(a, NULL,"go",K_STRING);
+	//printf("%s\n", t->list[0]->name);
+	arg_ctor(a, NULL,"go\0",K_STRING);
 	arg_ctor(a,"hulahop","U",K_DOUBLE);
 	htab_add_func(t, "c", "fnc", K_INT, a);
+
+
 
 	for_each(t,4, print);
 	htab_free(t, 4);
