@@ -92,6 +92,7 @@ void getToken(FILE *f, int *type, char **content){
             case ')': if(print)printf("kulata prava\n"); *type = B_ROUND_RIGHT;return;
             case '{': if(print)printf("slozena leva\n"); *type = B_WAVE_LEFT;return;
             case '}': if(print)printf("slozena prava\n"); *type = B_WAVE_RIGHT;return;
+            case ',': if(print)printf("carka\n"); *type = O_COMMA;return;
             case EOF: if(print)printf("eof\n"); *type = LEX_EOF;return;
             case '=':   
                 c = fgetc(f);    

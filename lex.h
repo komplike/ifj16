@@ -62,6 +62,7 @@ void getToken(FILE *f, int *type, char **content);
 
 #define O_SEMI      5001    // ;
 #define O_DOT       5002    // .
+#define O_COMMA     5003    // ,
 
 #define LEX_EOF     9001        // konec radku
 #define LEX_ERR     9002	// chyba v souboru
