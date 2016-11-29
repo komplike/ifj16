@@ -93,6 +93,63 @@ void getToken(FILE *f, int *type, char **content){
             case '{': if(print)printf("slozena leva\n"); *type = B_WAVE_LEFT;return;
             case '}': if(print)printf("slozena prava\n"); *type = B_WAVE_RIGHT;return;
             case EOF: if(print)printf("eof\n"); *type = LEX_EOF;return;
+            case '=':   
+                c = fgetc(f);    
+                if(c == '='){
+                    if(print)printf("rovnase\n");
+                    *type = SIGN_EQ;
+                    return;
+                }
+                else{
+                    if(print)printf("prirazeni\n");
+                    ungetc(c,f);    // vrati posledni nactene
+                    *type = SIGN_ASSIGN;
+                    return;
+                }
+            
+            case '<':
+                c = fgetc(f);    
+                if(c == '='){
+                    if(print)printf("mensi_rovno\n");
+                    *type = SIGN_LOE;
+                    return;
+                }
+                else{
+                    if(print)printf("mensi\n");
+                    ungetc(c,f);    // vrati posledni nactene
+                    *type = SIGN_LESS;
+                    return;
+                }
+                
+            case '>':
+                c = fgetc(f);    
+                if(c == '='){
+                    if(print)printf("vetsi_rovno\n");
+                    *type = SIGN_MOE;
+                    return;
+                }
+                else{
+                    if(print)printf("vetsi\n");
+                    ungetc(c,f);    // vrati posledni nactene
+                    *type = SIGN_MORE;
+                    return;
+                }    
+            
+                
+            case '!':
+                c = fgetc(f);    
+                if(c == '='){
+                    if(print)printf("nerovnase\n");
+                    *type = SIGN_NEQ;
+                    return;
+                }
+                else{
+                    if(print)printf("vykricnik a neco jinyho nez rovnase\n");
+                    ungetc(c,f);    // vrati posledni nactene
+                    *type = LEX_ERR;
+                    return;
+                }
+                
             case '"':   // textovy retezec
                         if(print)printf("retezec\n");                        
                         while(1){
