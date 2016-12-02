@@ -8,7 +8,7 @@ tInstList *ilist;
 void InitL(tInstList *L)
 {
 	L->first = NULL;
-	L->active = NULL;
+	L->act = NULL;
 	L->last = NULL;
 }
 
@@ -16,7 +16,7 @@ void FreeL(tInstList *L)
 {
 	for(L->act = L->first; L->first != NULL; L->first = L-> act)
 	{
-		L->active = L->first->nItem;
+		L->act = L->first->nItem;
 		free(L->first);
 	}
 	L->last = NULL;
