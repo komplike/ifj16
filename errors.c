@@ -1,44 +1,26 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-#include "errors.h"
+#include "error.h"
 
-void ErrExit(int err)
+const char *err_table[] = {
+
+	[LEX_ERR] = "Chyba v rogramu v ramci lexicalni analyzy.\n",
+	[SYN_ERR] = "Chyba v ramci syntakticke analyzy\n",
+	[UNDEF_ID] = "Semanticka chyba v programu\n",
+	[INC_TYP] = "Semanticka chyba typove kompatibility\n",
+	[SUCCESS] = "",
+	[AUT_T_ERR] = "----\n",
+	[SEM_ERR] = "Ostatnii semanticke chyby.\n",
+	[RT_NUM_IN] = "Behova chyba pri nacitani ciselne hodnoty ze vstupu.\n",
+	[RT_UNINIT] = "Behova chyba pri praci s neinicializovanou promennou.\n",
+	[RT_DIV_BZ] =  "Behova chyba pri deleni nulou.\n",
+	[RT_OTHER] = "Ostatni behove chyby.\n",
+	[INT_ERR] = "Interni chyba interpretu.\n",
+};
+
+
+inline unsigned int printError(unsigned int ret_msg_id)
 {
-	switch(err)
-	{
-		case(ERR_LEX):
-			fprintf(stderr, "IFJ16: lexical error!\n");
-			break;
-		case(ERR_SYNTAX):
-			fprintf(stderr, "IFJ16: syntax error!\n");
-			break;
-		case(ERR_SEMANTIC_DEF):
-			fprintf(stderr, "IFJ16: semantic error!\n");
-			break;
-		case(ERR_SEMANTIC_TYPES):
-			fprintf(stderr, "IFJ16: semantic type error!\n");
-			break;
-		case(ERR_AUTO_TYPE):
-			fprintf(stderr, "IFJ16: type error!\n");
-			break;
-		case(ERR_SEMANTIC_OTHERS):
-			fprintf(stderr, "IFJ16: semantic error!\n");
-			break;
-		case(ERR_READ_NUMBER):
-			fprintf(stderr, "IFJ16: failed to read number!\n");
-			break;
-		case(ERR_UNINIT):
-			fprintf(stderr, "IFJ16: var missing !\n");
-			break;
-		case(ERR_ZERO_DIV):
-			fprintf(stderr, "IFJ16: Math error: divison by zero!\n");
-			break;
-		case(ERR_RUNTIME):
-			fprintf(stderr, "IFJ16: runtime error !\n");
-			break;
-		case(ERR_INTERNAL):
-			fprintf(stderr, "IFJ16: smthng went wrong!\n");
-			break;
-		case(ERR_ALLOC):
-			fprintf(stderr, "IFJ16: memory allocation failed!\n");
+	fprintf(stderr, "%s", err_table[ret_msg_id]);
+	return ret_msg_id;
+}
