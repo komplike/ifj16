@@ -1,24 +1,24 @@
-#ifndef ERROR_H
-#define ERROR_H
+#ifndef ERRORS_H_
+#define ERRORS_H_
 
-enum ErrCodes
+extern const char *err_table[];
+
+enum msgs
 {
-	ERR_OK = 0,
-	ERR_LEX = 1,
-	ERR_SYNTAX = 2,
-	ERR_SEMANTIC_DEF = 3,
-	ERR_SEMANTIC_TYPES = 4,
-	ERR_AUTO_TYPE = 5,
-	ERR_SEMANTIC_OTHERS = 6,
-	ERR_READ_NUMBER = 7,
-	ERR_UNINIT = 8,
-	ERR_ZERO_DIV = 9,
-	ERR_RUNTIME = 10,
-	ERR_INTERNAL = 99,
-
-	ERR_ALLOC
+	SUCCESS = 0,
+	LEX_ERR = 1,
+	SYN_ERR = 2,
+	UNDEF_ID = 3,
+	INC_TYP = 4,
+	AUT_T_ERR = 5,
+	SEM_ERR = 6 ,
+	RT_NUM_IN = 7,
+	RT_UNINIT = 8,
+	RT_DIV_BZ = 9,
+	RT_OTHER = 10,
+	INT_ERR = 99,
 };
 
-void ErrExit(int err);
+unsigned int printError(unsigned int ret_msg_id);
 
 #endif
