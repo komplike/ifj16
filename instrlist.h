@@ -1,31 +1,31 @@
 #ifndef INSTRLIST_H_
 #define INSTRLIST_H_
 
-#define ADD_I		0
-#define SUB_I		1
-#define MUL_I		2
-#define DIV_I		3
-#define FADD_I		4
-#define FSUB_I		5
-#define FDIV_I		6
-#define VALPUSH_I	7
-#define TABPUSH_I	8
-#define CONV_I		9
-#define SWAP_I		10
-#define CONCAT_I	11
-#define LESS_I		12
-#define GREAT_I		13
-#define LESSEQ_I	14
-#define GREATEQ_I	15
-#define EQ_I		16
-#define NEQ_I		17
-#define FLESS_I		18
-#define FGREAT_I	19
-#define FLESSEQ_I	20
+#define ADD_I		    0
+#define SUB_I		    1
+#define MUL_I		    2
+#define DIV_I		    3
+#define FADD_I		  4
+#define FSUB_I		  5
+#define FDIV_I		  6
+#define VALPUSH_I	  7
+#define TABPUSH_I	  8
+#define CONV_I		  9
+#define SWAP_I		  10
+#define CONCAT_I	  11
+#define LESS_I		  12
+#define GREAT_I		  13
+#define LESSEQ_I	  14
+#define GREATEQ_I	  15
+#define EQ_I		    16
+#define NEQ_I		    17
+#define FLESS_I		  18
+#define FGREAT_I	  19
+#define FLESSEQ_I	  20
 #define FGREATEQ_I	21
-#define FEQ_I		22
-#define FNEQ_I		23
-#define GOTO_I		24
+#define FEQ_I		    22
+#define FNEQ_I		  23
+#define GOTO_I		  24
 
 typedef struct
 {
