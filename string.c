@@ -1,94 +1,140 @@
-//KNIHOVNA PRO ZPRACOVANI RETEZCU
-
-// prevzata z ukazkoveho projektu "Zjednodušená implementace interpretu jednoduchého jazyka"
-#include <stdio.h>
-#include <stdlib.h>
-#include <malloc.h>
-#include <stdbool.h>
 #include <string.h>
+#include <malloc.h>
+#include <stdlib.h>
+#include <stdbool.h>
 
 #include "string.h"
+#include "errors.h"
 
-#define STR_LEN_INC 8
-// konstanta STR_LEN_INC udava, na kolik bytu provedeme pocatecni alokaci pameti
-// pokud nacitame retezec znak po znaku, pamet se postupne bude alkokovat na
-// nasobky tohoto cisla
 
-#define STR_ERROR  -1
-#define STR_SUCCESS 0
+#define BUFF 16
 
-// funkce vytvori novy retezec
-int strInit(string *s){
-   if ((s->str = (char*) malloc(STR_LEN_INC)) == NULL)
-      return STR_ERROR;
-   s->str[0] = '\0';
-   s->length = 0;
-   s->allocSize = STR_LEN_INC;
-   return STR_SUCCESS;
-}
-
-// funkce uvolni retezec z pameti
-void strFree(string *s){
-   free(s->str);
-}
-
-// funkce vymaze obsah retezce
-void strClear(string *s){
-   s->str[0] = '\0';
-   s->length = 0;
-}
-
-// prida na konec retezce jeden znak
-int strAddChar(string *s1, char c){
-   if (s1->length + 1 >= s1->allocSize)
-   {
-      // pamet nestaci, je potreba provest realokaci
-      if ((s1->str = (char*) realloc(s1->str, s1->length + STR_LEN_INC)) == NULL)
-         return STR_ERROR;
-      s1->allocSize = s1->length + STR_LEN_INC;
-   }
-   s1->str[s1->length] = c;
-   s1->length++;
-   s1->str[s1->length] = '\0';
-   return STR_SUCCESS;
-}
-
-// prekopiruje retezec s2 do s1
-int strCopyString(string *s1, string *s2)
+int strinit(TString *str)
 {
-   int newLength = s2->length;
-   if (newLength >= s1->allocSize)
-   {
-      // pamet nestaci, je potreba provest realokaci
-      if ((s1->str = (char*) realloc(s1->str, newLength + 1)) == NULL)
-         return STR_ERROR;
-      s1->allocSize = newLength + 1;
-   }
-   strcpy(s1->str, s2->str);
-   s1->length = newLength;
-   return STR_SUCCESS;
+	if((str->string = (char*)malloc(BUFF)) == NULL)
+	{
+		printError(INT_ERR);
+	}
+	
+	str->string[0] = '\0';
+	str->length = 0;
+	str->allocated = BUFF;
+	
+	return 0;
 }
 
-// porovna oba retezce a vrati vysledek
-int strCmpString(string *s1, string *s2)
+int strInitDeafault(TString *str, char *s)
 {
-   return strcmp(s1->str, s2->str);
+	int res = strinit(str);
+
+	if(res != 0)
+	{
+		return res;
+	}
+	
+	for(unsigned i = 0; i < strlen(s); i++)
+	{
+		res=strCharAppend(str,s[i]);
+		
+		if(res != 0)
+		{
+			return res;
+		}
+	return 0;
 }
 
-// porovna nas retezec s konstantnim retezcem
-int strCmpConstStr(string *s1, char* s2)
+
+int strCharAppend(TString *str, char c)
 {
-   return strcmp(s1->str, s2);
+	int abs = str->length + 1;
+	
+	if(abs >= str->allocated)
+	{
+		str->string = realloc(str->string, abs + BUFF);
+		
+		if(str->string == NULL)
+		{
+			printError(INT_ERR);
+		}
+		
+		str->allocated = abs + BUFF;
+	}
+
+	str->string[str->length++] = c;//pridava znak;
+	str->string[str->length] = '\0';
+	
+	return 0;
 }
 
-// vrati textovou cast retezce
-char *strGetStr(string *s)
+void strReset(TString *str)
 {
-   return s->str;
+	str->string[0] = '\0';
+	str->length = 0;
 }
 
-// vrati delku daneho retezce
-int strGetLength(string *s)
+int strTStringCmp(const TString *str1, const TString *str2)
 {
-   return s->length;
+	return strcmp(str1->string, str2->string);
+}
+
+int strConstTStringCmp(TString *str1, char* str2)
+{
+	return strcmp(str1->string, str2);
+}
+
+int strTStringCpy(TString *destination, const TString *source)
+{
+	if(destination || source == NULL)
+	{
+		printError(INT_ERR);
+	}
+	
+	int length = source->length;
+	
+	if(length + 1 >= destination->allocated)
+	{
+		if((destination->string = (char*)realloc(destination->string, length+1)) == NULL)
+		{
+			printError(INT_ERR);
+		}
+	}
+	strcpy(destination->string, source->string);
+
+	destination->length = length;
+	destination->allocated = length+1;
+	
+	return 0;
+}
+
+int strTStringLen(TString *str)
+{
+	return str->length;
+}
+
+int strTStringCat(TString **destination, TString *source1, TString *source2)
+{
+	if(source1 == NULL || source2 == NULL)
+	{
+		printfError(INT_ERR);
+	}
+	
+	*destination = malloc(sizeof(TString));
+	strinit(*destination);
+
+	int length = source1->length + source2->length;
+
+	if(length + 1 >= (*destination)->allocated)
+	{
+		if(((*destination)->string = (char*)realloc((*destination)->string, length +1)))
+		{
+			printError(INT_ERR);
+		}
+	}
+	(*destination)->length = length;	
+	(*destination)->allocated = length+1;
+
+	strcpy((*destination)->string, source1->string);
+	strcat((*destination)->string, source2->string);
+	
+	return 0;
 }
