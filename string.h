@@ -1,23 +1,25 @@
-#ifndef _MY_STRING_H
-#define _MY_STRING_H
+#ifndef STRING_H
+#define STRING_H
 
 // prevzaty z ukazkoveho projektu "Zjednodušená implementace interpretu jednoduchého jazyka", zatim beze zmeny
 
 typedef struct string_struct
 {
-  char* string;		// misto pro dany retezec ukonceny znakem '\0'
+  char* str;		// misto pro dany retezec ukonceny znakem '\0'
   int length;		// skutecna delka retezce
-  int allocated;	// velikost alokovane pameti
-}TString;
+  int allocSize;	// velikost alokovane pameti
+} string;
 
-int strInit(TString *str);
-int strInitDefault(TString *str, char *s);
-int strCharAppend(TString *str, char c);
-void strReset(TString *str);
-int strStringCmp(const TString *str1, const TString *str2);
-int strConstTStringCmp(TString *str1, char *str2);
-int strTStringCpy(TString *destination, const TString *source);
-int strStringLen(TString *str);
-int strTStringCat(TString **destionation, TString *source1, TString *source2);
+int strInit(string *s);
+void strFree(string *s);
+
+void strClear(string *s);
+int strAddChar(string *s1, char c);
+int strCopyString(string *s1, string *s2);
+int strCmpString(string *s1, string *s2);
+int strCmpConstStr(string *s1, char *s2);
+
+char *strGetStr(string *s);
+int strGetLength(string *s);
 
 #endif
