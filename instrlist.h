@@ -26,6 +26,7 @@
 #define FEQ_I		    22
 #define FNEQ_I		  23
 #define GOTO_I		  24
+#define FMUL_I      25
 
 typedef struct
 {
@@ -58,6 +59,7 @@ void listNext(tListOfInstr *L); // aktivni instrukci se stane nasledujici instru
 tInstr *listGetData(tListOfInstr *L); // vrati aktivni instrukci
 void listGoto(tListOfInstr *L, tListItem *gotoInstr); // nastavime aktivni instrukci podle zadaneho ukazatele
 void *listGetPointerLast(tListOfInstr *L); // vrati ukazatel na posledni instrukci
+void printInstruction(tInstr *I) //vypisuje instrukce
 
 
 #endif
