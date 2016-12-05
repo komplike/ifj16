@@ -2,33 +2,37 @@
 
 
 <PROG> 				<CLASS>
-<CLASS>			class Main { <STATIC> static void run() { <BODY> } <STATIC>} <CLASS_NEXT>
-<CLASS>				class id { <STATIC> <BODY>} <CLASS_NEXT>
-<CLASS_NEXT>		eps
+<CLASS>				class id { <STATIC> <STATIC_NEXT>} <CLASS_NEXT>
 <CLASS_NEXT>		<CLASS>
-<STATIC>			<STATIC_ID>
-<STATIC>			<STATIC_FUNC>
-<STATIC_ID>			static id <STATIC_ID_EXP>;
+<CLASS_NEXT>		EPS
+<STATIC_NEXT>		<STATIC> <STATIC_NEXT>
+<STATIC_NEXT>		EPS
+<STATIC>			static id <STATIC_ID>
+<STATIC>			static id (<STATIC_FUNC>
+<STATIC_ID>			<STATIC_ID_EXP>;
 <STATIC_ID_EXPR>	=VAL
 <STATIC_ID_EXPR>	eps
-<STATIC_FUNC>		static id (<LIST_PARAMS>) { <BODY> }
+<STATIC_FUNC>		<LIST_PARAMS>) { <BODY> }
 <LIST_PARAMS>		eps	
 <LIST_PARAMS>		id <LIST_PARAMS_NEXT>
 <LIST_PARAMS_NEXT>	eps
 <LIST_PARAMS_NEXT>	, id <LIST_PARAMS_NEXT>
 <BODY>				eps
 <BODY>				<STAT>; <BODY>
-<STAT>				id <EXPR>;
-<STAT>				if (<EXPR>) {<STAT> <BODY>} else {<BODY>}
+<STAT>				id <PRIRAZENI>
+<STAT>				if (<EXPR>) {<STAT>; <BODY>} else {<BODY>}
 <STAT>				while (<EXPR>) {<STAT>; <BODY>}
-<STAT>				return <EXPR>;
+<STAT>				return <EXPR>
 <STAT>				<CALL_FUNC>
-<CALL_FUNC>			<VEST_FUNC>;
-<CALL_FUNC>			<REKURZE_FUNC>;
-<VEST_FUNC>			<VEST_FUNC_ID>
-<VEST_FUNC>			<VEST_FUNC_NOID>
-<VEST_FUNC_ID>		id = <VEST_FUNC_CALL>
-<VEST_FUNC_NOID>	<VEST_FUNC_CALL>
-<VEST_FUNC_CALL>	...
-<EXPR>				eps
+<CALL_FUNC>			id( <ARGS> )
+<PRIRAZENI>			EPS
+<PRIRAZENI>			= <EXPR>
+<PRIRAZENI>			= <CALL_FUNC>
+<ARGS>				<LIT> <ARGS_NEXT>
+<ARGS>				eps
+<LIT>				string
+<LIT>				id
+<LIT>	 			number
+<ARGS_NEXT>			, <LIT> <ARGS_NEXT>
+<ARGS_NEXT>			eps
 <EXPR>				expresion
