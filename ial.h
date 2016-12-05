@@ -6,5 +6,5 @@ void compjumps(char *p, int *jump, int len_p);
 void compmjump(char *p, int *jump, int len_p);
 int max(int x, int y);
 int min(int x, int y);
-
+void shellSort(char *array, int n);
 
