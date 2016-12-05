@@ -8,6 +8,30 @@
 
 #define MAXCHAR 255
 
+void shellSort(char *array, int n)
+{
+	int step, i, j;
+	char tmp;
+  	step = n / 2; 
+
+  		while (step > 0) 
+ 	        {
+    			for (i = step; i < n - 1; i++)
+    			{
+     				 j = i - step + 1;
+
+      				while ((j >= 1) && (array[j] > array[j + step]))
+     				{
+       					 tmp = array[j];
+       					 array[j] = array[j + step];
+       					 array[j + step] = tmp;
+        				 j = j - step;
+      				}
+    			}
+    			step = step / 2; 
+  		}
+}		
+
 int max(int x, int y)
 {
 	if(x>y)
