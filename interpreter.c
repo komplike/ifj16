@@ -391,6 +391,30 @@ int interpreter(htab_t *Table, tListOfInstr *List)
 					listGoto(List, Instruction->addr3);
 					Next = false;
 				break;
+				
+				case WHILE_I:	
+					
+					TOPb(&bval, &BStack);	
+					POPb(&Bstack);
+				
+					if(bval == false)
+					{
+						listGoto(List, Instruction->addr3);
+						Next = false;
+					}
+				break;
+
+				case IF_I:
+					TOPb(%bval, &BStack);	
+					POPb(&BStack);
+
+					if(bval == false)
+					{
+						listGoto(List, Instruction->addr3);
+						Next = false;
+					}
+				break;
+
 
 					
 					
