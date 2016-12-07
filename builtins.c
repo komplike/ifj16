@@ -6,8 +6,11 @@
 
 
 
-
+#include "errors.h"
 #include "ial.h"
+#include "string.h"
+
+extern STR_LEN_INC
 
 int lenght(const char *text)
 {
