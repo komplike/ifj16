@@ -29,6 +29,7 @@
 #define FMUL_I      25
 #define WHILE_I     26
 #define IF_I        27
+#define LABEL_I     28
 
 typedef struct
 {
