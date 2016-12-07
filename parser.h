@@ -1,5 +1,7 @@
-
-
+#ifndef PARS_H
+#define PARS_H
+#include <stdio.h>
+#include "htab.h"
 typedef enum Error
 {
     E_OK,        	// 0 - přeloženo bez chyby
@@ -15,17 +17,34 @@ typedef enum Error
     E_INT,			// 99 - interní chyba interpretu
 } tError;
 
-int prog() 
-int Class() 
-int Class_next()
-int Static()
-int static_id()
-int static_id_expr()
-int static_func()
-int list_params()
-int list_params_next()
-int body()
-int stat()
-int call_func()
-int expr()
+tError error; //globální proměnná pro výčet chyb
+struct htab *t;
+FILE *f;
+int type;
+char *func_name;
+char *class;
+char *content;
+int tmp_type;
+struct arg_list *arg;
 
+void GetNextToken();
+tError expresion();
+tError static_next();
+tError program(); 
+tError Class();
+tError Class_next();
+tError Static();
+tError static_id();
+tError static_id_expr();
+tError static_func();
+tError list_params();
+tError list_params_next();
+tError body();
+tError stat();
+tError prirazeni();
+tError call_func();
+tError args(struct htab_listitem *func);
+tError lit();
+tError args_next(struct htab_listitem *func);
+
+#endif

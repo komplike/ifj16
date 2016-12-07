@@ -16,6 +16,7 @@
 
 #include <stdbool.h>
 #include <string.h>
+#include <stdio.h>
 
 void addChar(char **content, int *type, int *alloc_size, int *content_size, int c);
 void getToken(FILE *f, int *type, char **content);
