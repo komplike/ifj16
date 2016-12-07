@@ -1,7 +1,9 @@
-#include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <malloc.h>
 #include <stdbool.h>
+#include <string.h>
+
 
 
 
@@ -72,3 +74,98 @@ char *sort(char text[])
 	
 
 	
+int readInt()
+{
+	char *r, c;
+	int allocated = STR_LEN_INC;
+	int l = 0
+	
+	if((r = (char*)malloc(sizeof(char) * STR_LEN_INC)) == NULL)
+	{
+		printError(INT_ERR);
+	}
+	
+	c = getchar();
+
+	for(int i = 0; (c >= '0' && c <= '9'); i++)
+	{
+		if(l + 1 > allocated)
+		{
+			if((r = (char*)realloc(r, l + STR_LEN_INC)) == NULL)
+			{
+				printError(INT_ERR);
+			}
+	
+			allocated  = STR_LEN_INC + l;
+		}
+
+		r[i] = c;
+		l++;
+		c = getchar();
+	}
+
+
+	if(c != '\n' && c != EOF)
+	{
+		free(r);
+		printError(INT_ERR);
+	}
+
+	if(l + 1 > allocated)
+	{
+		if((r = (char*)realloc(r, l + STR_LEN_INC)) == NULL)
+		{
+			printError(INT_ERR);
+		}
+	
+	}
+
+	r[strlen(r)] = '\0';
+
+	int n = atoi[r];
+	free(r);
+	return n;
+}
+
+double readDouble()
+{
+	char *r, c;
+	int allocated = STR_LEN_INC;
+	int l;
+	bool p;
+
+	if((r = (char*)malloc(sizeof(char) * STR_LEN_INC)) == NULL)
+	{
+		printfError(INT_ERR);
+	}
+	
+	c = getchat();
+	p = false;
+
+	for(int i = 0; (c >= '0' && c <= 9) || c == '.'; i++)
+	{
+		if(l + 1 > allocated)
+		{
+			if((r = (char*)malloc(r, l + STR_LEN_INC)) == NULL)
+			{
+				printError(INT_ERR);
+			}
+		allocated = l + STR_LEN_INC;
+		}
+
+		if(c == '.')
+		{
+			if(p == false)
+			{
+				p = true;
+			}
+			else
+			{
+				free(r);
+				printError(INT_ERR);
+			}
+		}
+	r[i] = c;
+	l++;
+	c = getchar();
+}
