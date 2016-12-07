@@ -395,7 +395,6 @@ int interpreter(htab_t *Table, tListOfInstr *List)
 				case WHILE_I:	
 					
 					TOPb(&bval, &BStack);	
-					POPb(&Bstack);
 				
 					if(bval == false)
 					{
