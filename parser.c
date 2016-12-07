@@ -10,20 +10,23 @@
 //struct htab *t;
 //FILE *f;
 
-bool prt = false;
-bool token_prt = false; 
-bool htab_prt = false;
+bool prt = true;
+bool token_prt = true; 
+bool htab_prt = true;
 bool sem = false;
 
 void GetNextToken(){
-	if (error != E_OK)
+	if (error != E_OK){
 		return;
+	}
 	getToken(f, &type, &content);
 	if (type == LEX_ERR)
 		error = E_LEX;
 	char c = '0';
-	if (type < 2000 && type != L_SIMPLE)
-		if (token_prt) printf(">>typ: %d	cont: %s\n", type, content);
+	if (type < 2000 && type != L_SIMPLE) {
+		if (token_prt) 
+			printf(">>typ: %d	cont: %s\n", type, content);
+	}
 	else {
 		switch (type) {
 			case SIGN_ADD: c = '+'; break;   // +
@@ -55,7 +58,8 @@ void GetNextToken(){
  			case LEX_ERR: c = '2'; break;    	// chyba v souboru
  			case LEX_RUN_ERR: c = '3'; break;	// chyba v automatu
 		}
-		if (token_prt)	printf(">>typ: %c	cont: %s\n", c, content);
+		if (token_prt)	
+			printf(">>typ: %c	cont: %s\n", c, content);
 	}
 }
 
@@ -848,13 +852,15 @@ if (prt) printf("__call_func__\n");
 
 	if(type == B_ROUND_LEFT){//vím že se jedná o volání rekurzivní funkce
 		{GetNextToken(); if (error != E_OK) return error;}
-		if((error = args(item)) != E_OK)
+		if((error = args(item)) != E_OK){
 			return error;
+		}
 	}
 
 	if (sem) {
 		error = arg_check(arg, item);
 	}
+
 	return error;	
 }
 
@@ -877,7 +883,7 @@ if (prt) printf("__args__\n");
 	}
 
 	if (type == L_SIMPLE){
-		str = str_cpy(content);
+		if (sem) str = str_cpy(content);
 
 		GetNextToken(); 
 		if (error != E_OK) 
@@ -899,15 +905,22 @@ if (prt) printf("__args__\n");
 				return E_SYN;
 			}
 
-			if (sem) error = arg_ctor(t, func->func->local_t, arg, str, content, type);
-			if (error != E_OK)
+			if (sem) {
+				error = arg_ctor(t, func->func->local_t, arg, str, content, L_SIMPLE);
+			}
+			if (error != E_OK){
+				free(str);
 				return error;
+			}
 		}
 		else {
-			if (sem) 
-				error = arg_ctor(t, func->func->local_t, arg, class, str, type);
-			if (error != E_OK)
+			if (sem) {
+				error = arg_ctor(t, func->func->local_t, arg, class, str, L_SIMPLE);
+			}
+			if (error != E_OK){
+				free(str);
 				return error;
+			}
 		}	
 	}
 	else {
@@ -936,7 +949,6 @@ if (prt) printf("__args__\n");
 
 	if (type == B_ROUND_RIGHT)
 		return E_SYN;
-
 	error = args_next(func);
 	return error;
 }
@@ -987,9 +999,8 @@ if (prt) printf("__args_next__\n");
 	}
 
 	if (type == L_SIMPLE){
-		str = str_cpy(content);
-
-		GetNextToken(); 
+		if (sem) str = str_cpy(content);
+		GetNextToken();
 		if (error != E_OK) 
 			return error;
 
@@ -1009,15 +1020,22 @@ if (prt) printf("__args_next__\n");
 				return E_SYN;
 			}
 
-			if (sem) error = arg_ctor(t, func->func->local_t, arg, str, content, type);
-			if (error != E_OK)
+			if (sem){
+			 	error = arg_ctor(t, func->func->local_t, arg, str, content, L_SIMPLE);
+			}
+			if (error != E_OK){
+				free(str);
 				return error;
+			}
 		}
 		else {
-			if (sem) 
-				error = arg_ctor(t, func->func->local_t, arg, class, str, type);
-			if (error != E_OK)
+			if (sem) {
+				error = arg_ctor(t, func->func->local_t, arg, class, str, L_SIMPLE);
+			}
+			if (error != E_OK){
+				free(str);
 				return error;
+			}
 		}	
 	}
 	else {
