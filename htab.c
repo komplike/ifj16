@@ -88,13 +88,11 @@ struct htab_listitem *htab_lookup (htab_t * t, const char *class, const char *na
  * ***************************************************************************/
 int htab_add (htab_t * htab, const char *class, const char *name, int def, int declr, int type)
 {
-  // printf("===htab_add===\n");
   if (htab_lookup (htab, class, name) != NULL)
     {
       printf ("redefinicia\n");
       return E_SEM_PROG;
     }
-  //printf("%s\n", name);
   if (name == NULL)
     {				//pojde prec po odladeni
       printf ("%s\n", "chyba meno");
@@ -126,7 +124,6 @@ int htab_add (htab_t * htab, const char *class, const char *name, int def, int d
   unsigned int i = hash_function (name, TAB_SIZE);
   new_item->next = htab->list[i];
   htab->list[i] = new_item;
-  // printf("===htab_add_func===end\n");
 
   return 0;
 }
@@ -168,14 +165,12 @@ int htab_add_val (htab_t * t, const char *class, const char *name,
 
 int htab_comp (htab_t * htab, const char *class, const char *name, int type)
 {
-  // printf("===htab_add===\n");
   struct htab_listitem *item;
   if ((item = htab_lookup (htab, class, name)) == NULL)
     {
       printf ("%s.%s nie je v ts\n", class, name);
       return E_SEM_PROG;
     }
-  //printf("%s\n", name);
   if (name == NULL)
     {				//pojde prec po odladeni
       printf ("%s\n", "chyba meno");
@@ -212,7 +207,6 @@ void htab_free (struct htab *t, int size)
 
   for (i = 0; i < size; i++)
     {
-    	// printf("free: %s.%s\n", ptr2->class, ptr2->name);
       ptr1 = t->list[i];
       while (ptr1 != NULL)
 	{
@@ -255,11 +249,7 @@ void htab_free (struct htab *t, int size)
 int htab_add_func (htab_t * t, const char *class, const char *name,
 	       int return_type, arg_l * args)
 {
-  // printf("===htab_add_func===\n");
-  //struct function *fun;
   struct htab_listitem *item = htab_lookup (t, class, name);
-  //int i;                        //pomocne pocitadlo
-  //int argc = 0; //pocet argumentov funkcie
 
   if (item == NULL)
     {
@@ -368,7 +358,6 @@ int arg_add (htab_t * t, arg_l * a)
 
 int param_ctor (arg_l * a, const char *class, const char *name, int type)
 {
-// printf("===arg_ctor===\n");
   if (a == NULL){
       return 99;
     }
@@ -401,7 +390,6 @@ int param_ctor (arg_l * a, const char *class, const char *name, int type)
 
 int arg_ctor (htab_t *t, htab_t *lt, arg_l *a, const char *cl, const char *name, int type)
 {
-// printf("===arg_ctor===\n");
   	if (a == NULL)
   	{
       	return 99;
@@ -424,13 +412,15 @@ int arg_ctor (htab_t *t, htab_t *lt, arg_l *a, const char *cl, const char *name,
 	  	a->act->name = str_cpy (name);
 	  	a->cnt++;
 	  	struct htab_listitem *item;
-	  	if (cl == class)
+	  	if (strcmp(cl, class) == 0){
 			item = htab_lookup (lt, NULL, name);
 			if (item == NULL){
 				item = htab_lookup (t, class, name);
 			}
-	    else
+		}
+	    else{	    	
 			item = htab_lookup (t, cl, name);
+	    }
 
 	    if (item == NULL)
 		{
@@ -445,7 +435,7 @@ int arg_ctor (htab_t *t, htab_t *lt, arg_l *a, const char *cl, const char *name,
 		}
 
 	    a->act->type = item->type;
-	}	    
+	}
 
   	if (a->act->next == NULL)
   	{
@@ -544,7 +534,6 @@ int arg_check(struct arg_list *a, struct htab_listitem *item){
 	a->act = a->first;
 	for (i = 0; i < a->cnt; ++i){
 		if (a->act->type != item->func->args[i]){
-			printf("arg: %s vs %s \n", a->act->name, item->name);
 			return E_SEM_TYPE;
 		}
 

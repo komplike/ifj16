@@ -10,10 +10,11 @@
 //struct htab *t;
 //FILE *f;
 
-bool prt = true;
-bool token_prt = true; 
-bool htab_prt = true;
-bool sem = false;
+bool prt = false;
+bool token_prt = false; 
+bool htab_prt = false;
+
+bool sem = false; // musi byt false!!
 
 void GetNextToken(){
 	if (error != E_OK){
@@ -24,8 +25,9 @@ void GetNextToken(){
 		error = E_LEX;
 	char c = '0';
 	if (type < 2000 && type != L_SIMPLE) {
-		if (token_prt) 
+		if (token_prt){
 			printf(">>typ: %d	cont: %s\n", type, content);
+		}
 	}
 	else {
 		switch (type) {
@@ -58,8 +60,9 @@ void GetNextToken(){
  			case LEX_ERR: c = '2'; break;    	// chyba v souboru
  			case LEX_RUN_ERR: c = '3'; break;	// chyba v automatu
 		}
-		if (token_prt)	
+		if (token_prt){	
 			printf(">>typ: %c	cont: %s\n", c, content);
+		}
 	}
 }
 
@@ -336,7 +339,10 @@ if (prt) printf("__static_id_expr__\n");
 		if ((error = htab_add_val(t, class, func_name, content)) != E_OK)
 			return error;
 	//todo co ak sa static id = func?
-	{GetNextToken(); if (error != E_OK) return error;}
+	GetNextToken(); 
+	if (error != E_OK) 
+		return error;
+
 
 	if(type != O_SEMI)
 		return E_SYN;
@@ -364,7 +370,7 @@ if (prt) printf("__static_func__\n");
 		return error;
 
 	if (!sem)
-		if ((error = htab_add_func(t, class, func_name, type, arg)) != E_OK)
+		if ((error = htab_add_func(t, class, func_name, tmp_type, arg)) != E_OK)
 			return error;
 
 	//if(type != B_ROUND_RIGHT)
@@ -374,14 +380,14 @@ if (prt) printf("__static_func__\n");
 	if(type != B_WAVE_LEFT) {
 		return E_SYN;
 	}
-
-	{GetNextToken(); if (error != E_OK) return error;}
-	if((error = body()) != E_OK) 
-	printf("post body error %d\n", error);
+	GetNextToken(); 
+	if (error != E_OK) 
 		return error;
-	
-	//{GetNextToken(); if (error != E_OK) return error;}
 
+	if((error = body()) != E_OK) {
+		return error;
+	}
+	//{GetNextToken(); if (error != E_OK) return error;}
 	if(type != B_WAVE_RIGHT)
 		return E_SYN;
 
@@ -397,8 +403,8 @@ tError list_params(){
 if (prt) printf("__list_params__\n");
 	if(error != E_OK)
 		return error;
-
 	if(type == B_ROUND_RIGHT){ //pokud se token rovná ')' není žádný parametr
+
 		return error;
 	}
 
@@ -509,7 +515,7 @@ if (prt) printf("__stat__\n");
 	char *str2 = NULL;
 	struct htab_listitem *item;
 	struct htab_listitem *item2;
-	int tmp = -1;
+	int tmp = -1; int i = -1;
 	if(type == K_INT || type == K_DOUBLE || type == K_STRING){
 		tmp = type;
 		{GetNextToken(); if (error != E_OK) return error;}
@@ -536,7 +542,7 @@ if (prt) printf("__stat__\n");
 			if(type != B_ROUND_LEFT)
 				return E_SYN;
 
-			if((error = expresion()) != E_OK) // provede se analýza výrazů
+			if((error = expression(K_BOOLEAN, false)) != E_OK) // provede se analýza výrazů
 				return error;
 
 			if(type != B_ROUND_RIGHT)
@@ -595,7 +601,7 @@ if (prt) printf("__stat__\n");
 
 			{GetNextToken(); if (error != E_OK) return error;}
 
-			if((error = expresion()) != E_OK) // provede se analýza výrazů
+			if((error = expression(K_BOOLEAN, false)) != E_OK) // provede se analýza výrazů
 				return error;
 
 			{GetNextToken(); if (error != E_OK) return error;}
@@ -633,18 +639,19 @@ if (prt) printf("__stat__\n");
 		case K_RETURN:  //<STAT>	return <EXPR>
 			if (tmp != -1)
 				return E_SYN;
-			{GetNextToken(); if (error != E_OK) return error;}
 
-			if((error = expresion()) != E_OK)
+			GetNextToken(); 
+			if (error != E_OK) 
+				return error;
+			item = htab_lookup(t, class, func_name);
+			if((error = expression(item->func->return_type, true)) != E_OK)
 				return error;
 
 			break;
 
 		case L_SIMPLE: //<STAT>		id <PRIRAZENI>
 			item = htab_lookup(t, class, func_name);
-			if (item == NULL || item->type != FUNC){
-				return error = 99;
-			}
+
 
 			str1 = str_cpy(content); 
 			
@@ -654,15 +661,12 @@ if (prt) printf("__stat__\n");
 
 			if (tmp == -1) {
 				if (type == B_ROUND_LEFT) {
-					error = call_func(NULL, str1);
+					error = call_func(class , str1);
 					if (error != E_OK) {
 						return error;
 					}
 
 					GetNextToken(); 
-					if (error != E_OK) 
-						return error;
-
 					free(str1);
 					str1 = NULL;
 					return error;
@@ -680,12 +684,20 @@ if (prt) printf("__stat__\n");
 					}
 					str2 = str_cpy(content);	//str1.str2 trieda.meno
 
-					{GetNextToken(); if (error != E_OK) return error;}
+					GetNextToken(); 
+					if (error != E_OK) {
+						free(str1);
+						free(str2);
+						str1 = NULL;
+						str2 = NULL;					
+						return error;
+					}
+
 					if (type == B_ROUND_LEFT) {
 						error = call_func(str2, str1);
 						if (error != E_OK)
 							return error;
-						{GetNextToken(); if (error != E_OK) return error;}
+						GetNextToken();
 						free(str1);
 						free(str2);
 						str1 = NULL;
@@ -696,19 +708,19 @@ if (prt) printf("__stat__\n");
 
 				if (str2 == NULL){
 					if (!sem){
-						if (htab_lookup(item->func->local_t, NULL, str1) == NULL)
+						if ((item2 = htab_lookup(item->func->local_t, NULL, str1)) == NULL)
 							error = htab_add(t, class, str1, NDEF, NDECLR, tmp);
 						if (error != E_OK)
 							return error;
 					}
 					if (sem) {
-						if (htab_lookup(item->func->local_t, NULL, str1) == NULL && htab_lookup(t, class, str1) == NULL) {
+						if ((htab_lookup(item->func->local_t, NULL, str1) == NULL) && (htab_lookup(t, class, str1) == NULL)) {
 							printf("premenna sa nenachadza v ts\n");
 							return error = E_SEM_PROG;
 						}
 					}
 				}
-				else if (sem && htab_lookup(t, str1, str2) == NULL){
+				else if (sem && (item2 = htab_lookup(t, str1, str2)) == NULL){
 					printf("premenna sa nenachadza v ts\n");
 					return error = E_SEM_PROG;
 				}
@@ -716,11 +728,23 @@ if (prt) printf("__stat__\n");
 				if (type == SIGN_ASSIGN) {
 					if (!sem){
 						item2 = htab_lookup(t, class, str1);
-						if (item2 != NULL)
+						if (item2 != NULL){
 							item2->def = DEF;
+						}
+					}
+					if (sem){
+						if (str2 == NULL) {
+							item2 = htab_lookup(t, class, func_name);
+							if (item2 == NULL)
+								return 99;
+							item2 = htab_lookup(item2->func->local_t, NULL, str1);
+							if (item2 == NULL)
+								return E_SEM_PROG;
+							i = item2->type;
+						}
 					}
 
-					if((error = prirazeni()) != E_OK) {
+					if((error = prirazeni(i)) != E_OK) {
 						free(str1);
 						str1 = NULL;
 						if (str2 != NULL){
@@ -741,15 +765,15 @@ if (prt) printf("__stat__\n");
 			}
 			else {	//typ id..
 				if (type == SIGN_ASSIGN) {
-					if (!sem) {
-						item2 = htab_lookup(t, class, str1);
+					if (sem) {
+						item2 = htab_lookup(item->func->local_t, NULL, str1);
 						if (item2 != NULL && item2->declr == NDECLR){
 							printf("nedeklarovana premenna\n");
 							return error = E_SEM_PROG;
 						}
-						printf("%s.%s\n", item2->class, item2->name);
 						item2->def = DEF;
 					}
+
 					if (!sem) {
 						error = htab_add(item->func->local_t, NULL, str1, DEF, DECLR, tmp);
 					}
@@ -758,11 +782,12 @@ if (prt) printf("__stat__\n");
 						str1 = NULL;
 						return error;
 					}
-					if ((error = prirazeni()) != E_OK){
+					if ((error = prirazeni(tmp)) != E_OK){
 						free(str1);
 						str1 = NULL;
 						return error;
 					}
+					return error;
 				}
 				if (type == O_SEMI){
 					if (!sem) {
@@ -795,7 +820,7 @@ if (prt) printf("__stat__\n");
 ** <PRIRAZENI> ->	= <EXPR>
 ** <PRIRAZENI> ->  	= <CALL_FUNC>
 */
-tError prirazeni(){
+tError prirazeni(int i){
 if (prt) printf("__prirazeni__\n");
 	if(error != E_OK)
 		return error;
@@ -807,7 +832,7 @@ if (prt) printf("__prirazeni__\n");
 	if(type == SIGN_ASSIGN){
 
 		{GetNextToken(); if (error != E_OK) return error;}
-		error = expresion();
+		error = expression(i, true);
 			return error;
 	}
 
@@ -852,7 +877,7 @@ if (prt) printf("__call_func__\n");
 
 	if(type == B_ROUND_LEFT){//vím že se jedná o volání rekurzivní funkce
 		{GetNextToken(); if (error != E_OK) return error;}
-		if((error = args(item)) != E_OK){
+		if((error = args(htab_lookup(t, class, func_name))) != E_OK) {
 			return error;
 		}
 	}
@@ -1020,7 +1045,7 @@ if (prt) printf("__args_next__\n");
 				return E_SYN;
 			}
 
-			if (sem){
+			if (sem) {
 			 	error = arg_ctor(t, func->func->local_t, arg, str, content, L_SIMPLE);
 			}
 			if (error != E_OK){
@@ -1039,7 +1064,7 @@ if (prt) printf("__args_next__\n");
 		}	
 	}
 	else {
-		if (sem) error = arg_ctor(t, func->func->local_t, arg, "#", content, type);
+		if (sem) error = arg_ctor(t, func->func->local_t, arg, NULL, content, type);
 		if (error != E_OK)
 			return error;
 		GetNextToken(); 
@@ -1070,7 +1095,7 @@ if (prt) printf("__args_next__\n");
 }
 
 
-tError expresion(){
+tError expression(int i, bool semi){
 	if (prt) printf("___expression___\n");
 	if (!true) {;//(sem)
 		//funkcia pre kontrolu vyrazov
@@ -1087,7 +1112,7 @@ tError expresion(){
 	            br_cnt++;
 	        else if (type == B_ROUND_RIGHT) {
 	            br_cnt--;
-	            if (br_cnt == 0)
+	            if (br_cnt == 0 && !semi)
 	        		break;
 	        }
 	        else if (type < 2000 || type > 6000) {

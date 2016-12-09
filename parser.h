@@ -1,6 +1,7 @@
 #ifndef PARS_H
 #define PARS_H
 #include <stdio.h>
+#include <stdbool.h>
 #include "htab.h"
 typedef enum Error
 {
@@ -28,7 +29,7 @@ int tmp_type;
 struct arg_list *arg;
 
 void GetNextToken();
-tError expresion();
+tError expression(int i, bool semi);
 tError static_next();
 tError program(); 
 tError Class();
