@@ -17,7 +17,7 @@ void set_val(htab_listitem *var, ival *value)
 {
 	set_frame(active, var, val->uval);
 }
-//ziskani hodnotu
+//ziskani hodnoty
 values get_val(htab_listitem *var)
 {
 	values val1;
@@ -165,63 +165,110 @@ void call_builtin_func(istack *stack, htab_listitem *built_in)
 {
 	if(strcmp(built_in->name, "ifj16.readInt") == 0)
 	{
-		int result  = readInt();
+		int result;
+		result = readInt();
 		PUSHv((void *)(unsigned)result, stack);
 	}
 	else if(strcmp(built_in->name, "ifj16.readDouble") == 0)
 	{
-		double result = readDouble();
+		double result;
+		result = readDouble();
 		PUSHv(void *)result, stack);
 	}
-	else if(strcmp(built_it->name, "ifj16.readString") == 0)
+	else if(strcmp(built_in->name, "ifj16.readString") == 0)
 	{
-		char *result = readString();
+		char *result;
+		result = readString();
 		PUSHv((void *)result, stack);
 	}
-}
+	else if(strcmp(built_in->name,"ifj16.lenght")== 0))
+	{
+		int result;
 
-int call_i(tListOfInstr *In, istack *stack, htab_listitem *f)
+		ival p_val;
+		TOP(&p_val, stack);
+		POP(stack);
+
+		result = lenght(p_val.uval.val_string);
+		
+		PUSHv((void *)result, stack);
+	}
+	else if(strcmp(built_in->name,"ifj16.sort") == 0))
+	{
+		ival p_val;
+		char *result;
+
+		TOP(&p_val, stack);
+		POP(stack);
+
+		result = shellSort(p_val.uval.val_string);
+		PUSHv((void*)result, stack);
+	}
+	else if(strcmp(built_in->name, "ifj16.compare") == 0))
+	{
+		
+		int result;
+
+		ival p1;
+		TOP(&p1, stack);
+		POP(stack);
+
+		ival p2;
+		TOP(&p2, stack);
+		POP(stack);
+	
+		result = strcmp(p1.uval.val_string, p2.uval.val_string);
+		PUSHv((void*)result, stack);
+	}
+		
+		
+}
+/*
+int call_i(tListOfInstr *In, istack *stack, htab_listitem *f)//nedokoncena
 {
-	if(strcmp(f->class, "CALL_FUNC") == 0)
+	if(f->type == FUNC)//jestli je funkce
 	{
 	
-		new = malloc(sizeof(tRamec));
+		new = malloc(sizeof(tRamec));//vytvorime novej ramec
 	
-		if(new == NULL)
+		if(new == NULL)//pokud je prazdnej - chyba
 		{
 			printError(INT_ERR);
 		}
 	
-		new->first = NULL;
+		new->first = NULL;//nastavime prvni jako prazdnej
 	
-		htab_listitem *p = f->func;
-	
-			while(p != NULL)
-			{
-				add_item(new, p);
-	
-				ival p_val;
-				TOP(&p_val, stack);
-				POP(stack);
+		htable_listitem *p = f->func;
 		
-				set_frame(new, p, p_val.uval);
-				p = p->next;
-			}
-
+		while(p != NULL)
+		{
+			ival p_val;
+	
+			add_item(new, p);
+			TOP(&p_val, stack);
+			POP(stack);
+		
+			set_frame(new, p, p_val.uval);
+			p = p->//next
+		
+		}
+	
 		new->next = act;
 		act = new;
 		new = NULL;
-	
-		if(strcmp(f->name,"Nevim co")== 0)
+		
+		if(strcmp(func->class/*name?, "run") == 0)
 		{
 			act->next = NULL;
 		}
 		else
 		{
-			act->next = instrlist->act->nextItem;
+			act->next = In->active->nextItem;
+			listGoto(In, f->prvni);//pridal bych to do hasovaci tabulky ve tvaru tListItem *prvni je potrebne na tuto goto instrukci. 
 		}
 	
-}	
-		return 0;
-
+	
+	return 0;
 }
+
+*/
