@@ -30,7 +30,7 @@ typedef struct bistack
 {
 	bitem *top;
 }bistack;
-
+//FCE pro praci se zasobnikem
 void POP(istack *Stack);
 void PUSHt(values val, istack *Stack);
 void PUSHv(void *val, istack *Stack);
