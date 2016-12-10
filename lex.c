@@ -7,14 +7,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
 #include "lex.h"
 
 #define LIT_LEN 1   // po kolika se bude alokovat pamet
 
 void getToken(FILE *f, int *type, char **content){
     
-    bool print = true;  // pro testovaci vypisy
+    bool print = false;  // pro testovaci vypisy
     
     // Uvolni pamet at tam bylo cokoli
     free(*content);
@@ -58,7 +57,7 @@ void getToken(FILE *f, int *type, char **content){
                                 *type = LEX_EOF;
                                 return;
                             }
-                            
+                            getToken(f, type, content);
                             break;  // na zacatek celeho while
                         }
                         else{
@@ -72,6 +71,7 @@ void getToken(FILE *f, int *type, char **content){
                                         return;
                                     }
                                 }
+                                getToken(f, type, content);
                                 break;  // na zacatek celeho while
                             }
                             else{

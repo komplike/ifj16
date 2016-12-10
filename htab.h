@@ -2,33 +2,17 @@
  * funkcie na pracu s tabulkou symbolov
  * autor: Michal Slavka
  * ***************************************************************************/
+#ifndef HTAB_H
+#define HTAB_H
+
 #define FUNC		-1		//docasne
 #define NOT_IN_TABLE -1		//docasne
 #define ESEM		8		//docasne
 #define DEF 		1		//docasne
 #define NDEF 		0		//docasne
-#define LTAB_SIZE	64
-#define GTAB_SIZE	4
-#define K_BOOLEAN   1001    
-#define K_BREAK     1002
-#define K_CLASS     1003
-#define K_CONTINUE  1004
-#define K_DO        1005
-#define K_DOUBLE    1006
-#define K_ELSE      1007
-#define K_FALSE     1008
-#define K_FOR       1009
-#define K_IF        1010
-#define K_INT       1011
-#define K_RETURN    1012
-#define K_STRING    1013
-#define K_STATIC    1014
-#define K_TRUE      1015
-#define K_VOID      1016
-#define K_WHILE     1017
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#define DECLR 		1
+#define NDECLR 		0
+#define TAB_SIZE	64
 
 typedef struct htab {	//tabulka symbolov
 	int size;
@@ -67,6 +51,7 @@ struct htab_listitem {
   char *class;			//nazov premennej
   char *name;
   int def;				//je funkcia/premenna definovana
+  int declr;
   int type;				//typ premennej popripade funkcia
   union {					
   	values val;				//hodnota premennej
@@ -84,13 +69,14 @@ struct htab *htab_init(int size);
 //vyhlada ci sa nachadza v tabulke
 struct htab_listitem *htab_lookup(htab_t *t, const char *class, const char *name);
 //pridava prvok do tabulky
-int htab_add(htab_t *htab, const char *class, const char *name, int def, int type, const char *value);
+int htab_add(htab_t *htab, const char *class, const char *name, int def, int declr, int type);
 //vytlaci vsetky prvky (popripade prerobim tak aby sa tam dala predat funkcia)
 int for_each(htab_t *t, int size, foreach_func func);
-//vytlaci prvok
+//vytlaci prvok 
 void print(struct htab_listitem *l);
 //uvolnuje tabulku
 void htab_free(struct htab *t, int size);
+int search_for_class(htab_t *t, const char *class, int size);
 //**************************************************
 //pridavanie funkcie do ts
 int htab_add_func(htab_t *t, const char *class, const char *name, int return_type, arg_l *args);
@@ -101,6 +87,11 @@ void print_func(struct htab_listitem *l);
 
 void print2(struct htab_listitem *l);
 
+int htab_comp(htab_t *htab, const char *class, const char *name, int type);
+
+int htab_add_val(htab_t *t, const char *class, const char *name, const char *value);
+
+int arg_check(struct arg_list *a , struct htab_listitem *item);
 //**************************************************
 //praca s argumentmy
 // uvolnenie zoznamu argumentov
@@ -108,9 +99,15 @@ void args_free(arg_l *a);
 //vytvorenie pola s typmi
 int *args_arr(arg_l *a, int argc);
 //pridavanie argumentov do zoznamu argumentov
-int arg_ctor(arg_l *a, const char *class, const char *name, int type);
-//pridavanie argumento do lokalnej tabulky symbolov
+int arg_ctor (htab_t *t, htab_t *lt, arg_l *a, const char *cl, const char *name, int type);
+
 int arg_add(htab_t *t, arg_l *a);
+
+int param_ctor(arg_l *a, const char *class, const char *name, int type);
+
+arg_l *arg_init();
+
+void check1 (struct htab_listitem *l);
 
 //**************************************************
 //kopirovanie string retazcov
@@ -119,3 +116,5 @@ char *str_cpy(const char *str);
 int str_int(const char *i);
 //konverzia string to double
 double str_double(const char *d);
+
+#endif
