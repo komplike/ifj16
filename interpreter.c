@@ -8,9 +8,9 @@
 #include "instrlist.h"
 #include "interpreter.h"
 #include "string.h"
-#include "errors.h"
 
-int interpreter(htab_t *Table, tListOfInstr *List)
+
+int interpreter(tListOfInstr *List)
 {
 	istack Stack;
 	bistack BStack;
@@ -22,6 +22,7 @@ int interpreter(htab_t *Table, tListOfInstr *List)
 	values value;
 	
 	bool Next = false;
+	bool bval;
 
 
 	listFirst(List);
@@ -395,6 +396,7 @@ int interpreter(htab_t *Table, tListOfInstr *List)
 				case WHILE_I:	
 					
 					TOPb(&bval, &BStack);	
+					POPb(&Bstack);
 				
 					if(bval == false)
 					{
@@ -414,8 +416,19 @@ int interpreter(htab_t *Table, tListOfInstr *List)
 					}
 				break;
 
+				case: LABEL_I:
+				break;
 
-					
+				case: RETURN_I:
+
+					int result = return_i(L);
+					Next = false;
+				break;
+
+				case: CALL_I:
+					call_i(L, &Stack, (htab_listitem *)I->addr3);
+					Next = false;
+				break;
 					
 			}
 		}

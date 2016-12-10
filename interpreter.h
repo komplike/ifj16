@@ -3,6 +3,6 @@
 
 #include "stack.h"
 
-int interpreter(htab_t *Table, tListOfInstr *List);
+int interpreter(tListOfInstr *List);
 
 #endif
