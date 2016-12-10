@@ -2,30 +2,30 @@
 #define INTERPRETER_H_
 
 #include "htab.h"
-
+//stack pro hodnoty
 typedef union
 {
 	values uval;
 	void *vval;
 }ival;
-
+//stack pro polozky v stacku
 typedef struct iitem
 {
 	ival value;
 	struct iitem *next;
 }iitem;
-
+//stack, ktery potrebujeme pro praci s interpretem
 typedef struct istack
 {
 	iitem *top;
 }istack;
-
+//polozka v stacku 
 typedef struct bitem
 {
 	bool value;
 	struct bitem *next;
 }bitem;
-
+//stack pro zpracovani logickych operaci
 typedef struct bistack
 {
 	bitem *top;
