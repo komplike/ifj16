@@ -180,7 +180,48 @@ void call_builtin_func(istack *stack, htab_listitem *built_in)
 	}
 }
 
-int call_i(tListOfInstr *In, istack *stack, htab_listitem *func)
+int call_i(tListOfInstr *In, istack *stack, htab_listitem *f)
 {
-\\doplnit;	
+	if(strcmp(f->class, "CALL_FUNC") == 0)
+	{
+	
+		new = malloc(sizeof(tRamec));
+	
+		if(new == NULL)
+		{
+			printError(INT_ERR);
+		}
+	
+		new->first = NULL;
+	
+		htab_listitem *p = f->func;
+	
+			while(p != NULL)
+			{
+				add_item(new, p);
+	
+				ival p_val;
+				TOP(&p_val, stack);
+				POP(stack);
+		
+				set_frame(new, p, p_val.uval);
+				p = p->next;
+			}
+
+		new->next = act;
+		act = new;
+		new = NULL;
+	
+		if(strcmp(f->name,"Nevim co")== 0)
+		{
+			act->next = NULL;
+		}
+		else
+		{
+			act->next = instrlist->act->nextItem;
+		}
+	
+}	
+		return 0;
+
 }

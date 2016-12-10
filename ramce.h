@@ -25,7 +25,7 @@ int get_frame(tRamec *ramec, htab_listitem *var, values *val);
 int free_frame(tRamec **ramec);
 
 int return_i(tListofInstr *In);
-int call_i(tListOfInstr, istack *S, htab_listitem *function);
+int call_i(tListOfInstr, istack *S, htab_listitem *f);
 
 
 
