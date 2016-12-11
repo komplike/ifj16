@@ -10,9 +10,9 @@
 //struct htab *t;
 //FILE *f;
 
-bool prt = false;
-bool token_prt = false; 
-bool htab_prt = false;
+bool prt = true;
+bool token_prt = true; 
+bool htab_prt = true;
 
 bool sem = false; // musi byt false!!
 
@@ -709,7 +709,8 @@ if (prt) printf("__stat__\n");
 				if (str2 == NULL){
 					if (!sem){
 						if ((item2 = htab_lookup(item->func->local_t, NULL, str1)) == NULL)
-							error = htab_add(t, class, str1, NDEF, NDECLR, tmp);
+							if ((item2 = htab_lookup(t, class, str1)) == NULL)
+								error = htab_add(t, class, str1, NDEF, NDECLR, tmp);
 						if (error != E_OK)
 							return error;
 					}
@@ -735,9 +736,10 @@ if (prt) printf("__stat__\n");
 					if (sem){
 						if (str2 == NULL) {
 							item2 = htab_lookup(t, class, func_name);
-							if (item2 == NULL)
-								return 99;
-							item2 = htab_lookup(item2->func->local_t, NULL, str1);
+							if (item2 == NULL){
+								item2 = htab_lookup(item2->func->local_t, NULL, str1);
+							}
+							// 	return 99;
 							if (item2 == NULL)
 								return E_SEM_PROG;
 							i = item2->type;
