@@ -4,6 +4,7 @@
 #include "instrlist.h"
 #include "interpreter.h"
 #include "htab.h"
+//ADT pro FCE pro praci se zasobnikem
 typedef union
 {
 	values uval;
@@ -26,7 +27,7 @@ typedef struct bitem
 	bool value;
 	struct bitem *next;
 }bitem;
-
+//ramci
 typedef struct bistack
 {
 	bitem *top;
@@ -45,7 +46,6 @@ typedef struct tPoRamec
 	values value;
 	struct tPoRamec *next;
 }tPoRamec;
-
 
 values get_val(struct htab_listitem * var);
 void set_val( struct htab_listitem * var, ival *value);
