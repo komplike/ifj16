@@ -1,30 +1,31 @@
+#ifndef RAMCE_H_
+#define RAMCE_H_
+
 #include "instrlist.h"
 #include "interpreter.h"
 #include "htab.h"
 
 typedef struct tRamec
 {	
-	tPoRamec *first;
+	struct tPoRamec *first;
 	tListItem *nextInstr;
 	struct tRamec *next;
 }tRamec;
 
 typedef struct tPoRamec
 {
-	htab_listitem *var;
+        struct htab_listitem_t *var;
 	values value;
 	struct tPoRamec *next;
 }tPoRamec;
 
-values get_val(htab_listitem *var);
-void set_val(htab_listitem *var, ival *val);
-int add_item(tRamec *ramec, htab_listitem *var);
-int set_frame(tRamec *ramec, htab_listitem *var, values val);
-int get_frame(tRamec *ramec, htab_listitem *var, values *val);
-int free_frame(tRamec **ramec);
 
-int return_i(tListofInstr *In);
-int call_i(tListOfInstr, istack *S, htab_listitem *f);
+values get_val(struct htab_listitem * var);
+void set_val( struct htab_listitem * var, ival *value);
 
 
+int return_i(tListOfInstr *In);
+int call_func(tListOfInstr *In, istack *stack, struct htab_listitem *f);
 
+
+#endif

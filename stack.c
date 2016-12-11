@@ -8,10 +8,10 @@
 
 void POP(istack *Stack)
 {
-	iitem = *aux;
+	iitem *aux;
 	aux = (*Stack).top;
 	(*Stack).top = (*Stack).top->next;
-	free(tmp);
+	free(aux);
 }
 
 void PUSHt(values val, istack *Stack)
@@ -20,7 +20,7 @@ void PUSHt(values val, istack *Stack)
 	aux = (iitem*)malloc(sizeof(iitem));
 	
 	aux->next = Stack->top;
-	tmp->value.uval = val;
+	aux->value.uval = val;
 	
 	Stack->top = aux;
 }
@@ -67,7 +67,7 @@ void bPUSH(bool val, bistack *BStack)
 	
 	aux->value = val;
 	aux->next = BStack->top;
-	Bstack->top = aux;
+	BStack->top = aux;
 }
 
 void bTOP(bool *val, bistack *BStack)
@@ -75,14 +75,14 @@ void bTOP(bool *val, bistack *BStack)
 	*val = BStack->top->value;
 }
 
-void PRINT(istack *STACK)
+void PRINT(istack *Stack)
 {
 	iitem *aux;
 	aux = Stack->top;
 
 	while(aux != NULL)
 	{
-		printf("%p ", aux->values.vval);
+		printf("%p ", aux->value.vval);
 	
 		aux = aux->next;
 	}

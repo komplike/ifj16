@@ -8,28 +8,27 @@
 #include "string.h"
 #include "errors.h"
 #include "ramce.h"
-#include "builtins.h"
+#include "stack.h"
 
-extern FUNC;
 
 tRamec *new = NULL;
 tRamec *act = NULL;
 //nastavi hodnotu
-void set_val(htab_listitem *var, ival *value)
+void set_val(struct htab_listitem *var, ival *value)
 {
-	if(
-	set_frame(active, var, val->uval);
+	set_frame(act, var, value->uval);
 }
 //ziskani hodnoty
-values get_val(htab_listitem *var)
+values get_val(struct htab_listitem *var)
 {
 	values val1;
-	get_frame(active, var, &val1);
+	get_frame(act, var, &val1);
 	return val1;
 }
 
+
 //ziskani polozky
-tPoRamec *get_item(tRamec *ramec, htab_listitem *var)
+tPoRamec *get_item(tRamec *ramec, struct htab_listitem *var)
 {
 	tPoRamec *tmp = ramec->first;
 	
@@ -46,7 +45,7 @@ tPoRamec *get_item(tRamec *ramec, htab_listitem *var)
 	return NULL;
 }
 //pridat item
-int add_item(tRamec *ramec, htab_listitem *var)
+int add_item(tRamec *ramec, struct htab_listitem *var)
 {
 	tPoRamec *tmp = malloc(sizeof(tPoRamec));
 
@@ -66,7 +65,7 @@ int add_item(tRamec *ramec, htab_listitem *var)
 	return 0;
 }
 //nastavit ramec
-int set_frame(tRamec *ramec, htab_listitem *var, values val)
+int set_frame(tRamec *ramec,struct  htab_listitem *var, values val)
 {
 	if(ramec == NULL)
 	{
@@ -96,9 +95,9 @@ int set_frame(tRamec *ramec, htab_listitem *var, values val)
 	return 0;
 }
 //ziskat ramec
-int get_frame(tRamec *ramec, htab_listitem *var, values *val)
+int get_frame(tRamec *ramec, struct htab_listitem *var, values *val)
 {
-	if(frame == NULL)
+	if(ramec == NULL)
 	{
 		printError(INT_ERR);
 	}
@@ -121,7 +120,7 @@ int get_frame(tRamec *ramec, htab_listitem *var, values *val)
 
 	}
 
-	*val = item->value;
+	*val = aux->value;
 	return 0;
 }
 // uvolnit ramec
@@ -142,20 +141,20 @@ void free_frame(tRamec **ramec)
 //instrukce return
 int return_i(tListOfInstr *In)
 {
-	if(active == NULL)
+	if(act == NULL)
 	{
 		printError(INT_ERR);
 	}
 
-	listGoto(In, active->next);
+	listGoto(In, act->nextInstr);
 
-	tRamec *aux = active;
-	active = active -> next;
+	tRamec *aux = act;
+	act = act -> next;
 
 	free_frame(&aux);
 
 	
-	if(active == NULL)
+	if(act == NULL)
 	{
 		printError(INT_ERR);
 	}
@@ -165,9 +164,9 @@ int return_i(tListOfInstr *In)
 }
 
 
-int call_i(tListOfInstr *In, istack *stack, htab_listitem *f)//nedokoncena
+int call_func(tListOfInstr *In, istack *stack, struct htab_listitem *f)
 {
-	if(f->type == FUNC)//jestli je funkce
+	if(strcmp((f->type), "CALL_FUNC") == 0 )//jestli je funkce
 	{
 	
 		new = malloc(sizeof(tRamec));//vytvorime novej ramec
@@ -179,9 +178,11 @@ int call_i(tListOfInstr *In, istack *stack, htab_listitem *f)//nedokoncena
 	
 		new->first = NULL;//nastavime prvni jako prazdnej
 	
-		htable_listitem *p = f->fp;
+		struct htab_listitem *p;//prvni parametr
 		
-		while(p != NULL)
+		p = f->fp;
+	
+		while(p != NULL)//pokud neni prazdny
 		{
 			ival p_val;
 	
@@ -197,16 +198,19 @@ int call_i(tListOfInstr *In, istack *stack, htab_listitem *f)//nedokoncena
 		act = new;
 		new = NULL;
 	
+		if(strcmp(f->name, "run") == 0)
+		{
+			act->nextInstr = NULL;
+		}
 		else
 		{
 			act->nextInstr = In->active->nextItem;
 		}
 	
-		listGoto(instrlist, func->fi);
+		listGoto(In, f->fi);
 	}
 	
 	return 0;
 }
-
 
 

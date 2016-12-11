@@ -81,6 +81,12 @@ void printInstruction(tInstr *I)
         case FEQ_I: printf("FEQ"); break;
         case FNEQ_I: printf("FNEQ"); break;
         case GOTO_I: printf("GOTO"); break;
+	case CALL_I: printf("CALL"); break;
+	case IF_I: printf("IF");break;
+	case WHILE_I: printf("WHILE");break;
+	case RETURN_I: printf("RETURN"); break;
+	case LABEL_I: printf("LABEL"); break;
+
         default: printf("%d", I->instType);
     }
 
@@ -122,3 +128,15 @@ void *listGetPointerLast(tListOfInstr *L)
 {
 	return (void *)L->last;
 }
+
+void InstSet(int type void *p1, void *p2, void *p3)
+{
+	tInstr instruction = {type, p1, p2, p3);
+
+	listInsertLast(instr_list);
+}
+
+void FuncSet(tListItem **item)
+{
+	InstSet(LABEL_I, NULL, NULL, NULL);
+	*item = instr_list->last;

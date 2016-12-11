@@ -8,43 +8,48 @@
 #include "instrlist.h"
 #include "interpreter.h"
 #include "string.h"
+#include "ramce.h"
+#include "errors.h"
 
 
 int interpreter(tListOfInstr *List)
 {
-	istack Stack;
-	bistack BStack;
+	istack Stack;// pomocny stack pro hodnoty
+	bistack BStack;//stack stack pro provedeni relacnich operaci
 
 	Stack.top = NULL;
 	BStack.top = NULL;
 	
-	iitem first, second, result;
+	iitem first, second, result;//polozky pro ukladani operandu a vysledku
 	values value;
 	
-	bool Next = false;
-	bool bval;
+	bool Next = false;//nasledujici operace(predem nedefinovna)
+	bool bval = true;
 
+	int res;
 
-	listFirst(List);
+	listFirst(List);//nacteme prvni instrukci
 	tInstr *Instruction = NULL;
 
-	Instruction = listGetData(List);
+	Instruction = listGetData(List);//ziskame data
 
 
-		while(List->active != NULL)
+		while(List->active != NULL)//pokud seznam je aktivni 
 		{
-			if(Next)
+			if(Next)//pokud zadna instrukce neni nacte nasledujici ze seznamu
 			{
 				listNext(List);
 			}
 
-			Instruction = listGetData(List);
+			Instruction = listGetData(List);//ziskani data
 		
-			Next = true;
+			Next = true;//nasledujici instrukce
 
 			
-			switch(Instruction -> instType)
+			switch(Instruction -> instType)//typy jsednotlivych instrukci
 			{
+//*******************************************(MATEMATICKE OPERACE)(int))***************************************************************
+//"+"
 				case ADD_I:
 					TOP(&(first.value), &Stack);
 					POP(&Stack);
@@ -54,7 +59,7 @@ int interpreter(tListOfInstr *List)
 					(result.value.uval.val_int) = (first.value.uval.val_int) + (second.value.uval.val_int);
 					PUSHt(result.value.uval, &Stack);
 				break;
-				
+//"-"		
 				case SUB_I:
 					TOP(&(first.value), &Stack);
 					POP(&Stack);
@@ -64,7 +69,7 @@ int interpreter(tListOfInstr *List)
 					(result.value.uval.val_int) = (first.value.uval.val_int) - (second.value.uval.val_int);
 					PUSHt(result.value.uval, &Stack);
 				break;
-
+//"*"
 				case MUL_I:
 					TOP(&(first.value), &Stack);
 					POP(&Stack);
@@ -74,7 +79,7 @@ int interpreter(tListOfInstr *List)
 					(result.value.uval.val_int) = (first.value.uval.val_int) * (second.value.uval.val_int);
 					PUSHt(result.value.uval, &Stack);
 				break;
-
+//"/"
 				case DIV_I:
 					TOP(&(first.value), &Stack);
 					POP(&Stack);
@@ -84,7 +89,7 @@ int interpreter(tListOfInstr *List)
 					(result.value.uval.val_int) = (second.value.uval.val_int) / (first.value.uval.val_int);
 					PUSHt(result.value.uval, &Stack);
 				break;
-
+//******************************************(MATEMATICKE OPERACE(double))***************************************************************
 				case FADD_I:
 					TOP(&(first.value), &Stack);
 					POP(&Stack);
@@ -124,7 +129,7 @@ int interpreter(tListOfInstr *List)
 					(result.value.uval.val_double) = (first.value.uval.val_double) + (second.value.uval.val_double);
 					PUSHt(result.value.uval, &Stack);
 				break;
-
+//**********************************************(POSUNITI HODNOTY)************************************************************************
 				case VALPUSH_I:
 					PUSHv(Instruction->addr1, &Stack);
 				break;
@@ -171,7 +176,8 @@ int interpreter(tListOfInstr *List)
 					PUSHt(result.value.uval, &Stack);
 					
 				break;
-
+//******************************************(RELACNI OPERACE(int))***********************************************************
+//"<"
 				case LESS_I:
 				
 					TOP(&(first.value), &Stack);
@@ -189,7 +195,7 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-
+//">"
 				case GREAT_I:
 				
 					TOP(&(first.value), &Stack);
@@ -207,7 +213,7 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-
+//"<="
 				case LESSEQ_I:
 				
 					TOP(&(first.value), &Stack);
@@ -225,7 +231,7 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-
+//">="
 				case GREATEQ_I:
 				
 					TOP(&(first.value), &Stack);
@@ -243,7 +249,7 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-		
+//"=="		
 				case EQ_I:
 				
 					TOP(&(first.value), &Stack);
@@ -261,7 +267,7 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-
+//"!="
 				case NEQ_I:
 				
 					TOP(&(first.value), &Stack);
@@ -279,7 +285,8 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-
+//*******************************************(RELACNI OPERACE(double)*****************************************
+//"<"
 				case FLESS_I:
 				
 					TOP(&(first.value), &Stack);
@@ -297,7 +304,7 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-
+//">"
 				case FGREAT_I:
 				
 					TOP(&(first.value), &Stack);
@@ -315,7 +322,7 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-
+//"<="
 				case FLESSEQ_I:
 				
 					TOP(&(first.value), &Stack);
@@ -333,7 +340,7 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-
+//">="
 				case FGREATEQ_I:
 				
 					TOP(&(first.value), &Stack);
@@ -351,7 +358,7 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-
+//"!="
 				case FNEQ_I:
 				
 					TOP(&(first.value), &Stack);
@@ -369,7 +376,7 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-
+//"=="
 				case FEQ_I:
 				
 					TOP(&(first.value), &Stack);
@@ -387,53 +394,52 @@ int interpreter(tListOfInstr *List)
 						PUSHb(false, &BStack);
 					}
 				break;
-
+//******************************************(INSTRUKCE SKOKU)**********************************************
+//"goto"
 				case GOTO_I:
 					listGoto(List, Instruction->addr3);
 					Next = false;
 				break;
-				
+//"while"				
 				case WHILE_I:	
 					
 					TOPb(&bval, &BStack);	
-					POPb(&Bstack);
-				
-					if(bval == false)
+					if(bval)
 					{
 						listGoto(List, Instruction->addr3);
 						Next = false;
 					}
 				break;
-
+//"if"
 				case IF_I:
-					TOPb(%bval, &BStack);	
+					TOPb(&bval, &BStack);	
 					POPb(&BStack);
 
-					if(bval == false)
+					if(bval)
 					{
 						listGoto(List, Instruction->addr3);
 						Next = false;
 					}
 				break;
-
+//"label"
 				case LABEL_I:
 				break;
+//"return"
+				case RETURN_I:
 
-				case: RETURN_I:
-
-					int result = return_i(L);
+					res = return_i(List);
 					Next = false;
 				break;
-
+//volani instrukci
 				case CALL_I:
-					call_i(L, &Stack, (htab_listitem *)I->addr3);
+			 
+					res = call_func(List, &Stack,(struct htab_listitem*)Instruction->addr3);
 					Next = false;
 				break;
 					
 			}
 		}
 	
-	PRINT(&Stack);
 	
 	return 0;
 }
