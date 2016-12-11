@@ -3,7 +3,7 @@
 
 CFLAGS = -std=c99 -g
 #-pedantic -Wall -Wextra -g -fPIC
-MOD = htab.o lex.o parser.o
+MOD = ial.o lex.o parser.o
 
 all: compiler clear
 comp: compiler
