@@ -10,11 +10,14 @@
 #include "ramce.h"
 #include "builtins.h"
 
+extern FUNC;
+
 tRamec *new = NULL;
 tRamec *act = NULL;
 //nastavi hodnotu
 void set_val(htab_listitem *var, ival *value)
 {
+	if(
 	set_frame(active, var, val->uval);
 }
 //ziskani hodnoty
@@ -160,85 +163,23 @@ int return_i(tListOfInstr *In)
 
 	return 0;
 }
-//volani vestavenych funkci
-void call_builtin_func(istack *stack, htab_listitem *built_in)
-{
-	if(strcmp(built_in->name, "ifj16.readInt") == 0)
-	{
-		int result;
-		result = readInt();
-		PUSHv((void *)(unsigned)result, stack);
-	}
-	else if(strcmp(built_in->name, "ifj16.readDouble") == 0)
-	{
-		double result;
-		result = readDouble();
-		PUSHv(void *)result, stack);
-	}
-	else if(strcmp(built_in->name, "ifj16.readString") == 0)
-	{
-		char *result;
-		result = readString();
-		PUSHv((void *)result, stack);
-	}
-	else if(strcmp(built_in->name,"ifj16.lenght")== 0))
-	{
-		int result;
 
-		ival p_val;
-		TOP(&p_val, stack);
-		POP(stack);
 
-		result = lenght(p_val.uval.val_string);
-		
-		PUSHv((void *)result, stack);
-	}
-	else if(strcmp(built_in->name,"ifj16.sort") == 0))
-	{
-		ival p_val;
-		char *result;
-
-		TOP(&p_val, stack);
-		POP(stack);
-
-		result = shellSort(p_val.uval.val_string);
-		PUSHv((void*)result, stack);
-	}
-	else if(strcmp(built_in->name, "ifj16.compare") == 0))
-	{
-		
-		int result;
-
-		ival p1;
-		TOP(&p1, stack);
-		POP(stack);
-
-		ival p2;
-		TOP(&p2, stack);
-		POP(stack);
-	
-		result = strcmp(p1.uval.val_string, p2.uval.val_string);
-		PUSHv((void*)result, stack);
-	}
-		
-		
-}
-/*
 int call_i(tListOfInstr *In, istack *stack, htab_listitem *f)//nedokoncena
 {
 	if(f->type == FUNC)//jestli je funkce
 	{
 	
 		new = malloc(sizeof(tRamec));//vytvorime novej ramec
-	
-		if(new == NULL)//pokud je prazdnej - chyba
+		
+		if(new == NULL)
 		{
 			printError(INT_ERR);
 		}
 	
 		new->first = NULL;//nastavime prvni jako prazdnej
 	
-		htable_listitem *p = f->func;
+		htable_listitem *p = f->fp;
 		
 		while(p != NULL)
 		{
@@ -249,26 +190,23 @@ int call_i(tListOfInstr *In, istack *stack, htab_listitem *f)//nedokoncena
 			POP(stack);
 		
 			set_frame(new, p, p_val.uval);
-			p = p->//next
-		
+			p = p->np;
 		}
-	
+		
 		new->next = act;
 		act = new;
 		new = NULL;
-		
-		if(strcmp(func->class/*name?, "run") == 0)
-		{
-			act->next = NULL;
-		}
+	
 		else
 		{
-			act->next = In->active->nextItem;
-			listGoto(In, f->prvni);//pridal bych to do hasovaci tabulky ve tvaru tListItem *prvni je potrebne na tuto goto instrukci. 
+			act->nextInstr = In->active->nextItem;
 		}
 	
+		listGoto(instrlist, func->fi);
+	}
 	
 	return 0;
 }
 
-*/
+
+
