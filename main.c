@@ -13,31 +13,23 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "ial.h"
 #include "lex.h"
 
 int main(int argc, char** argv) {
 
-    FILE *f = fopen("test.txt", "r");
-    if(f == NULL){
-        fprintf(stderr, "Chyba cteni souboru!");
-        return 1;
-    }
-   
-    int type = 0;
-    char *content = NULL;
-    
-    while(type != LEX_EOF){
-        getToken( f, &type, &content);  
-        if(type == LEX_RUN_ERR || type == LEX_ERR)
-            return 1;
+    if (argc != 2)
+        return 99;
 
-        printf("content = \"%s\", ", content);
-        printf("type = %d\n", type);
-    }    
-    
+    arg = arg_init();
+    t = htab_init(TAB_SIZE);
+
+    error = parser(argv[1]);
+
+    htab_free(t, TAB_SIZE);
+    args_free(arg);
     free(content);
-    fclose(f);
-    
+
     return (EXIT_SUCCESS);
 }
 
