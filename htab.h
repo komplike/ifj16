@@ -54,6 +54,8 @@ struct htab_listitem {
   int declr;
   int type;				//typ premennej popripade funkcia
   tListItem *first;
+  struct htab_listitem *fp;
+  struct htab_listitem *np;
   union {					
   	values val;				//hodnota premennej
   	struct function *func;	//dalsie informacie k funkcii
