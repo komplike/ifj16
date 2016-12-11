@@ -416,7 +416,7 @@ int interpreter(tListOfInstr *List)
 					}
 				break;
 
-				case: LABEL_I:
+				case LABEL_I:
 				break;
 
 				case: RETURN_I:
@@ -425,7 +425,7 @@ int interpreter(tListOfInstr *List)
 					Next = false;
 				break;
 
-				case: CALL_I:
+				case CALL_I:
 					call_i(L, &Stack, (htab_listitem *)I->addr3);
 					Next = false;
 				break;
