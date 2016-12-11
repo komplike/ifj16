@@ -129,14 +129,15 @@ void *listGetPointerLast(tListOfInstr *L)
 	return (void *)L->last;
 }
 
-void InstSet(int type void *p1, void *p2, void *p3)
+void InstSet(int type, void *p1, void *p2, void *p3)
 {
 	tInstr instruction = {type, p1, p2, p3);
 
-	listInsertLast(instr_list);
+	listInsertLast(instruction);
 }
 
 void FuncSet(tListItem **item)
 {
 	InstSet(LABEL_I, NULL, NULL, NULL);
 	*item = instr_list->last;
+}
