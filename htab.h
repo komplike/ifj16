@@ -53,6 +53,9 @@ struct htab_listitem {
   int def;				//je funkcia/premenna definovana
   int declr;
   int type;				//typ premennej popripade funkcia
+//tListItem *fi;			//prvni instrukce
+//struct htab_listitem *fp;		//prvni parametr
+//struct htab_listitem *np;		//dalsi parametr
   union {					
   	values val;				//hodnota premennej
   	struct function *func;	//dalsie informacie k funkcii
