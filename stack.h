@@ -1,8 +1,9 @@
 #ifndef STACK_H_
 #define STACK_H_
 
+#include "instrlist.h"
+#include "interpreter.h"
 #include "htab.h"
-
 typedef union
 {
 	values uval;
@@ -30,6 +31,30 @@ typedef struct bistack
 {
 	bitem *top;
 }bistack;
+
+typedef struct tRamec
+{	
+	struct tPoRamec *first;
+	tListItem *nextInstr;
+	struct tRamec *next;
+}tRamec;
+
+typedef struct tPoRamec
+{
+        struct htab_listitem_t *var;
+	values value;
+	struct tPoRamec *next;
+}tPoRamec;
+
+
+values get_val(struct htab_listitem * var);
+void set_val( struct htab_listitem * var, ival *value);
+
+
+int return_i(tListOfInstr *In);
+int call_func(tListOfInstr *In, istack *stack, struct htab_listitem *f);
+
+
 
 void POP(istack *Stack);//odstrani prvek z vrcholu zasobniku a vrati jeho hodnotu
 void PUSHt(values val, istack *Stack);//vlozi hodnotu na vrchol stacku
