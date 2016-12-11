@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "parser.h"
 #include "ial.h"
 #include "lex.h"
 
@@ -30,6 +31,6 @@ int main(int argc, char** argv) {
     args_free(arg);
     free(content);
 
-    return (EXIT_SUCCESS);
+    return error;
 }
 

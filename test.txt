@@ -1,3 +1,12 @@
-Test file;
-boolean
-bb
+class Main
+{
+static int x;
+static void run(){
+	String str1;
+	str1 = "ahoj"; 
+	String str2 = str1; 
+	x = 5;
+	} 
+static int a;
+}
+

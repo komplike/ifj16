@@ -2,7 +2,7 @@
 #define PARS_H
 #include <stdio.h>
 #include <stdbool.h>
-#include "htab.h"
+#include "ial.h"
 typedef enum Error
 {
     E_OK,        	// 0 - přeloženo bez chyby
@@ -29,7 +29,8 @@ int tmp_type;
 struct arg_list *arg;
 
 void GetNextToken();
-tError expression(int i, bool semi);
+tError parser();
+tError expression(struct htab_listitem *i, bool semi);
 tError static_next();
 tError program(); 
 tError Class();
@@ -42,7 +43,7 @@ tError list_params();
 tError list_params_next();
 tError body();
 tError stat();
-tError prirazeni();
+tError prirazeni(struct htab_listitem *item);
 tError call_func();
 tError args(struct htab_listitem *func);
 tError lit();

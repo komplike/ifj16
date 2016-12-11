@@ -1,20 +1,15 @@
-
 #include "parser.h"
-// #include "lex.c"	
 #include "lex.h"
-#include "htab.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
-//struct htab *t;
-//FILE *f;
+struct arg_list *arg;
 
 bool prt = true;
 bool token_prt = true; 
 bool htab_prt = true;
 
-bool sem = false; // musi byt false!!
+bool sem = false;
 
 void GetNextToken(){
 	if (error != E_OK){
@@ -66,11 +61,14 @@ void GetNextToken(){
 	}
 }
 
-tError parser(){
+tError parser(const char *fileName){
 
-	f = fopen("test.txt", "r");
-	arg = arg_init();
-	t = htab_init(TAB_SIZE);
+	f = fopen(fileName, "r");
+	if (f == NULL){
+		fprintf(stderr, "chybny  nazov souboru \"%s\"\n", fileName);
+		return error = 1;	
+	}
+
 	GetNextToken(); 
 	if (error != E_OK) 
 		return error;
@@ -79,7 +77,7 @@ tError parser(){
 		error = E_LEX;
 	else
 	 	error = program();
-
+	// koniec syntaktickej kontroly
 	if (error != E_OK){
 		printf("\n\n");
 		for_each(t, TAB_SIZE, print);
@@ -93,10 +91,14 @@ tError parser(){
 	for_each(t, TAB_SIZE, check1);
 	if (error != E_OK)
 		return error;
-	if (prt) printf("***********************************semantika************************************\n");
-
-	f = fopen("test.txt", "r");
+	//zaciatok semantickej kontroly
+	if (!sem) if (prt) printf("***********************************semantika************************************\n");
 	sem = true;
+
+	f = fopen(fileName, "r");
+	if (f == NULL){
+		fprintf(stderr,"z nejakeho dovodu sa nepodarilo znovuotvorit subor\n");
+	}
 	GetNextToken(); 
 	if (error != E_OK) 
 		return error;
@@ -109,9 +111,7 @@ tError parser(){
 		printf("\n\n");
 		for_each(t, TAB_SIZE, print);
 	}
-	htab_free(t, TAB_SIZE);
-	args_free(arg);
-	free(content);
+
 	content = NULL;
 
 	return error;
@@ -140,7 +140,8 @@ if (prt) printf("__program__\n");
 tError Class(){
 if (prt) printf("__Class__\n");
 	if(error != E_OK)
-		return error;	
+		return error;
+
 
 	if(type != K_CLASS) 
 		return E_SYN;
@@ -360,7 +361,9 @@ if (prt) printf("__static_func__\n");
 	if( error != E_OK)
 		return error;
 
-	{GetNextToken(); if (error != E_OK) return error;}
+	GetNextToken(); 
+	if (error != E_OK) 
+		return error;
 
 	if (!sem)
 		if ((error = htab_add(t,class,func_name, DEF, DECLR, FUNC)) != E_OK)
@@ -538,11 +541,13 @@ if (prt) printf("__stat__\n");
 			if (tmp != -1)
 				return E_SYN;
 			{GetNextToken(); if (error != E_OK) return error;}
-
+			//if (sem) instuction set if_i NULL NULL NULL
+//TODO
 			if(type != B_ROUND_LEFT)
 				return E_SYN;
-
-			if((error = expression(K_BOOLEAN, false)) != E_OK) // provede se analýza výrazů
+//goto_i NULL NULL NULL
+			//vygenerovat if (expression) go to navestie s unikatnym nazvom???
+			if((error = expression(NULL, false)) != E_OK) // provede se analýza výrazů
 				return error;
 
 			if(type != B_ROUND_RIGHT)
@@ -601,12 +606,12 @@ if (prt) printf("__stat__\n");
 
 			{GetNextToken(); if (error != E_OK) return error;}
 
-			if((error = expression(K_BOOLEAN, false)) != E_OK) // provede se analýza výrazů
+			if((error = expression(NULL, false)) != E_OK) // provede se analýza výrazů
 				return error;
 
 			{GetNextToken(); if (error != E_OK) return error;}
 
-			if(type != B_ROUND_RIGHT)
+				if(type != B_ROUND_RIGHT)
 				return E_SYN;
 
 			{GetNextToken(); if (error != E_OK) return error;}
@@ -644,8 +649,8 @@ if (prt) printf("__stat__\n");
 			if (error != E_OK) 
 				return error;
 			item = htab_lookup(t, class, func_name);
-			if((error = expression(item->func->return_type, true)) != E_OK)
-				return error;
+			if((error = expression(item, true)) != E_OK)
+					return error;
 
 			break;
 
@@ -742,11 +747,10 @@ if (prt) printf("__stat__\n");
 							// 	return 99;
 							if (item2 == NULL)
 								return E_SEM_PROG;
-							i = item2->type;
 						}
 					}
 
-					if((error = prirazeni(i)) != E_OK) {
+					if((error = prirazeni(item2)) != E_OK) {
 						free(str1);
 						str1 = NULL;
 						if (str2 != NULL){
@@ -784,7 +788,7 @@ if (prt) printf("__stat__\n");
 						str1 = NULL;
 						return error;
 					}
-					if ((error = prirazeni(tmp)) != E_OK){
+					if ((error = prirazeni(htab_lookup(item->func->local_t, NULL, str1))) != E_OK){
 						free(str1);
 						str1 = NULL;
 						return error;
@@ -822,7 +826,9 @@ if (prt) printf("__stat__\n");
 ** <PRIRAZENI> ->	= <EXPR>
 ** <PRIRAZENI> ->  	= <CALL_FUNC>
 */
-tError prirazeni(int i){
+tError prirazeni(struct htab_listitem *item){
+if (item != NULL)
+	printf("%s\n", item->name);
 if (prt) printf("__prirazeni__\n");
 	if(error != E_OK)
 		return error;
@@ -834,11 +840,11 @@ if (prt) printf("__prirazeni__\n");
 	if(type == SIGN_ASSIGN){
 
 		{GetNextToken(); if (error != E_OK) return error;}
-		error = expression(i, true);
-			return error;
+		error = expression(item, true);
+		return error;
 	}
 
-	// return error;
+	return error;
 }
 
 /*
@@ -1097,10 +1103,10 @@ if (prt) printf("__args_next__\n");
 }
 
 
-tError expression(int i, bool semi){
+tError expression(struct htab_listitem *i, bool semi){
 	if (prt) printf("___expression___\n");
-	if (!true) {;//(sem)
-		//funkcia pre kontrolu vyrazov
+	if (sem) {//(sem)
+		//TVOJA FUNKCIA IDE SEM!!!
 	}
 	else {
 	    int br_cnt = 0;
@@ -1127,9 +1133,3 @@ tError expression(int i, bool semi){
     return E_OK;
  }
 
-
-int main(){
-	printf("\n%d\n\n",parser());
-
-	return 0;
-}
